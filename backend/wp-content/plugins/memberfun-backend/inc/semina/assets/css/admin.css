@@ -1,0 +1,84 @@
+/**
+ * MemberFun Semina - Admin Styles
+ */
+
+/* Meta Box Styles */
+.memberfun-semina-meta-box label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.memberfun-semina-meta-box .description {
+    display: block;
+    color: #666;
+    font-style: italic;
+    margin-top: 3px;
+}
+
+.memberfun-semina-meta-box input[type="date"],
+.memberfun-semina-meta-box input[type="time"],
+.memberfun-semina-meta-box input[type="text"],
+.memberfun-semina-meta-box input[type="number"],
+.memberfun-semina-meta-box select {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Document List Styles */
+.memberfun-semina-documents {
+    margin-bottom: 20px;
+}
+
+.memberfun-semina-document-item {
+    background: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 3px;
+}
+
+.memberfun-semina-document-item p {
+    margin: 0;
+}
+
+.memberfun-semina-document-item a {
+    text-decoration: none;
+}
+
+.memberfun-semina-document-item .memberfun-remove-document {
+    color: #a00;
+}
+
+.memberfun-semina-document-item .memberfun-remove-document:hover {
+    color: #dc3232;
+}
+
+/* Quick Edit Styles */
+.inline-edit-col .inline-edit-col {
+    padding: 0 0.5em;
+}
+
+.inline-edit-col .title {
+    font-weight: bold;
+    display: block;
+    margin: 0.2em 0;
+}
+
+/* Admin Filters */
+.tablenav input[type="date"] {
+    height: 28px;
+    vertical-align: middle;
+    margin: 0 4px;
+    line-height: 1;
+}
+
+/* Settings Page */
+.memberfun-semina-settings-page .form-table th {
+    width: 200px;
+}
+
+.memberfun-semina-settings-page .form-table td label {
+    display: block;
+    margin-bottom: 5px;
+} 

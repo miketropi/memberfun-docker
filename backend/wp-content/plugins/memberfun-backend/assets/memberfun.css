@@ -1,0 +1,92 @@
+.memberfun-semina-rating-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.memberfun-semina-rating-list .rating-list-item {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.memberfun-semina-rating-list .rating-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.memberfun-semina-rating-list .rating-avatar {
+  margin-right: 1rem;
+}
+
+.memberfun-semina-rating-list .avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.memberfun-semina-rating-list .rating-user {
+  flex: 1;
+}
+
+.memberfun-semina-rating-list .user-name {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.memberfun-semina-rating-list .user-email {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.memberfun-semina-rating-list .rating-scores {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.memberfun-semina-rating-list .score-item {
+  display: flex;
+  align-items: center;
+}
+
+.memberfun-semina-rating-list .score-label {
+  font-size: 0.85rem;
+  color: #666;
+  margin-right: 0.5rem;
+}
+
+.memberfun-semina-rating-list .score-value {
+  display: flex;
+  align-items: baseline;
+}
+
+.memberfun-semina-rating-list .score-number {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.memberfun-semina-rating-list .score-max {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.memberfun-semina-rating-list .rating-actions {
+  display: flex;
+  margin-top: 1rem;
+}
+
+.memberfun-semina-rating-list .delete-rating {
+  background-color: #dc3232;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.memberfun-semina-rating-list .delete-rating:hover {
+  background-color: #c93030;
+  color: #fff;
+}

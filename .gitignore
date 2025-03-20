@@ -1,0 +1,9 @@
+.env
+.env.dev
+backend/wp-content/uploads/*
+backend/wp-content/plugins/*
+!backend/wp-content/plugins/memberfun-backend
+backend/wp-content/upgrade/
+backend/wp-content/upgrade-temp-backup/ 
+backend/wp-content/themes/*
+!backend/wp-content/themes/twentytwentyfive
