@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { seminarsAPI } from '../../api/apiService';
+import { useNavigate, useLocation } from 'react-router-dom';
 import SeminarFilters from './components/SeminarFilters';
 import SeminarPagination from './components/SeminarPagination';
 import SeminarHeader from './components/SeminarHeader';
@@ -13,7 +14,33 @@ export default function CustomSeminarExample() {
   const [registeredSeminars, setRegisteredSeminars] = useState([]);
   const [registrationLoading, setRegistrationLoading] = useState(false);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
   
+  // make function get local pathname
+  const getLocalPathname = () => {
+    return location.pathname;
+  }
+
+  let localPathname = getLocalPathname();
+
+  useEffect(() => {
+    if (localPathname.includes('seminars')) {
+      const seminarId = localPathname.split('/').pop();
+      if(seminarId == 'seminars') return;
+
+      // console.log('seminarId', seminarId);
+      // find seminars by id
+      const seminar = seminars.find(seminar => seminar.id === parseInt(seminarId));
+      if (seminar) {
+        // console.log('seminar', seminar);
+        setSelectedSeminar(seminar);
+      }
+      // console.log('seminarId', seminarId);
+      // setSelectedSeminar(seminarId);
+    }
+  }, [localPathname, seminars]);
+
   // Pagination state
   const [pagination, setPagination] = useState({
     total: 0,
@@ -85,6 +112,7 @@ export default function CustomSeminarExample() {
   };
 
   const handleSeminarClick = (seminar) => {
+    navigate(`/dashboard/seminars/${seminar.id}`);
     setSelectedSeminar(seminar);
     setShowRegistrationForm(false);
   };
@@ -196,7 +224,10 @@ export default function CustomSeminarExample() {
                   onExportCalendar={handleExportCalendar}
                   registrationLoading={registrationLoading}
                   onRegistrationComplete={handleRegistrationComplete}
-                  onCloseDetails={() => setSelectedSeminar(null)}
+                  onCloseDetails={() => {
+                    navigate('/dashboard/seminars');
+                    setSelectedSeminar(null);
+                  }}
                 />
 
                 <SeminarPagination

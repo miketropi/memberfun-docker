@@ -68,3 +68,53 @@ function memberfun_backend_enqueue_scripts() {
     );
 }
 add_action('admin_enqueue_scripts', 'memberfun_backend_enqueue_scripts');
+
+// Test email sending function
+function memberfun_backend_send_test_email() {
+    $to = 'mike.beplus@gmail.com';
+    $subject = 'Test Email from MemberFun';
+    $message = 'This is a test email from the MemberFun plugin.';
+    $headers = array('Content-Type: text/html; charset=UTF-8');
+
+    $sent = wp_mail($to, $subject, $message, $headers);
+    var_dump($sent);
+    return $sent;
+}
+
+// Send test email on init
+// add_action('init', 'memberfun_backend_send_test_email');
+
+// update user role for user registered for editor role
+add_action('user_register', 'memberfun_backend_update_user_role');
+function memberfun_backend_update_user_role($user_id) {
+    $user = get_user_by('id', $user_id);
+    $user->set_role('editor');
+    $user->save();
+}
+
+// wordpress hook after user registration
+add_action('user_register', 'memberfun_backend_send_email_to_user');
+function memberfun_backend_send_email_to_user($user_id) {
+    $user = get_user_by('id', $user_id);
+    $to = $user->user_email;
+    $subject = 'Welcome to MemberFun';
+    $message = sprintf(
+        '<div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+            <h2 style="color: #2c3e50;">Welcome to MemberFun!</h2>
+            <p>Hello %s,</p>
+            <p>Your account has been created successfully. Here are your account details:</p>
+            <ul style="list-style: none; padding-left: 0;">
+                <li><strong>Username:</strong> %s</li>
+                <li><strong>Email:</strong> %s</li>
+            </ul>
+            <p>You can now log in to your account and start exploring our platform.</p>
+            <p>If you have any questions, please don\'t hesitate to contact us.</p>
+            <p>Best regards,<br>The MemberFun Team</p>
+        </div>',
+        esc_html($user->display_name),
+        esc_html($user->user_login),
+        esc_html($user->user_email)
+    );
+    $headers = array('Content-Type: text/html; charset=UTF-8');
+    wp_mail($to, $subject, $message, $headers);
+}

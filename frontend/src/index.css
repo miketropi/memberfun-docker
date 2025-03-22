@@ -191,3 +191,49 @@ button:focus-visible {
 .dark .prose pre {
   background-color: #111827;
 }
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+}
+
+.prose thead {
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.prose th {
+  padding: 0.75em 1em;
+  text-align: left;
+  font-weight: 600;
+  color: #111827;
+}
+
+.prose td {
+  padding: 0.75em 1em;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.prose tr:hover {
+  background-color: #f3f4f6;
+}
+
+.dark .prose thead {
+  background-color: #1f2937;
+  border-bottom: 1px solid #374151;
+}
+
+.dark .prose th {
+  color: #f9fafb;
+}
+
+.dark .prose td {
+  border-bottom: 1px solid #374151;
+  color: #d1d5db;
+}
+
+.dark .prose tr:hover {
+  background-color: #374151;
+}

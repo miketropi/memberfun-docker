@@ -77,7 +77,7 @@ function memberfun_send_mail_after_add_points($user_id, $points, $transaction_id
         <p>You have received <strong>' . $points . ' points</strong> in your MemberFun account.</p>
         <p>Reason: ' . $note . '</p>
         <p>Your transaction ID is: ' . $transaction_id . '</p>
-        <p>Thank you for being a valued member!</p>
+        <p>You are an active member, thank you for your contributions.</p>
     ';
 
     $headers = array('Content-Type: text/html; charset=UTF-8');

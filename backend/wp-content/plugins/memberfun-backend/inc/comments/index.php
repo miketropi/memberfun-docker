@@ -202,6 +202,9 @@ function memberfun_create_comment($request) {
     // Insert comment
     $comment_id = wp_insert_comment($comment_data);
 
+    // add a hook after comment is created
+    do_action('memberfun_comment_created', $comment_id);
+
     if (is_wp_error($comment_id)) {
         return $comment_id;
     }
@@ -223,6 +226,43 @@ function memberfun_create_comment($request) {
     ), 201);
 }
 
+// add a hook send email to author post after comment is created
+add_action('memberfun_comment_created', 'memberfun_send_email_to_author_post');
+
+function memberfun_send_email_to_author_post($comment_id) {
+    $comment = get_comment($comment_id);
+    $post_id = $comment->comment_post_ID;
+    $post_author = get_post_field('post_author', $post_id);
+
+    $post_author_email = get_the_author_meta('email', $post_author);
+
+    // if post type is seminar, send email to seminar host
+    if (get_post_type($post_id) == 'memberfun_semina') {
+        $seminar_host = get_post_meta($post_id, '_memberfun_semina_host', true);
+        $seminar_host_email = get_the_author_meta('email', $seminar_host);
+        $post_author_email = [$post_author_email, $seminar_host_email];
+    }
+
+    $post_title = get_the_title($post_id);
+    $comment_content = $comment->comment_content;
+    $comment_date = $comment->comment_date;
+    
+    $headers = array('Content-Type: text/html; charset=UTF-8');
+    $subject = 'New comment on your post';
+    $body = '
+    <html>
+    <body>
+    <h3>New comment on your post</h3>
+    <p>Post title: ' . $post_title . '</p>
+    <p>Comment: ' . $comment_content . '</p>
+    <p>Comment date: ' . $comment_date . '</p>
+    <p>Comment by: ' . $comment->comment_author . ' (' . $comment->comment_author_email . ')</p>
+    </body>
+    </html>
+    ';
+
+    wp_mail($post_author_email, $subject, $body, $headers); 
+}
 /**
  * Update an existing comment
  *

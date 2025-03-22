@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { format, parseISO, isFuture } from 'date-fns';
 import { 
   Calendar, 
@@ -8,7 +9,8 @@ import {
   Users, 
   XCircle,
   FileText,
-  Download
+  Download,
+  Undo2
 } from 'lucide-react';
 import SeminarRegistrationButton from './SeminarRegistrationButton';
 import SeminarComments from './SeminarComments';
@@ -51,9 +53,10 @@ export default function SeminarDetails({
           <div className="flex items-center gap-4">
             <button
               onClick={onClose}
-              className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors"
+              className="flex items-center gap-2 rounded-lg px-4 py-2.5 bg-gray-900 text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
             >
-              <XCircle className="h-5 w-5" />
+              <Undo2 className="h-5 w-5" />
+              <span className="font-medium">Back</span>
             </button>
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">{seminar.title}</h2>
           </div>

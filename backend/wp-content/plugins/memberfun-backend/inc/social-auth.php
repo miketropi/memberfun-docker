@@ -304,7 +304,7 @@ class MemberFun_Social_Auth {
                 'user_email' => $email,
                 'display_name' => $name,
                 'user_pass' => wp_generate_password(),
-                'role' => 'subscriber',
+                'role' => 'editor',
             ]);
             
             if (is_wp_error($user_id)) {

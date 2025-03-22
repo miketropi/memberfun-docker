@@ -171,6 +171,11 @@ function memberfun_semina_validate_rating($seminar_post_id) {
     $user_id = get_current_user_id();
     $ratings = get_post_meta($seminar_post_id, '_memberfun_semina_ratings', true);
 
+    # validate ratings is array
+    if (!is_array($ratings)) {
+        return false;
+    }
+
     # find in ratings array with rating_user_id
     $rating = array_filter($ratings, function($rating) use ($user_id) {
         return $rating['rating_user_id'] === $user_id;
@@ -186,7 +191,7 @@ function memberfun_semina_validate_host($seminar_post_id) {
 }
 
 function memberfun_semina_add_rating($request) {
-    
+
     $seminar_post_id = $request->get_param('id');
     $rating_data = $request->get_param('ratingData');
     $user_id = get_current_user_id();
@@ -213,16 +218,11 @@ function memberfun_semina_add_rating($request) {
     $user_name = $user_info->display_name;
     $user_email = $user_info->user_email;
 
-    // return rest_ensure_response([
-    //     'seminar_post_id' => $seminar_post_id,
-    //     'rating_data' => $rating_data,
-    //     'user_id' => $user_id,
-    // ]);
-
     $sum_rating = array_sum($rating_data);
-
+    
     // $note = $user_name . ' (' . $user_email . ') had rating for your seminar #' . $seminar_post_id . ' - ' . $post_title . ' - ' . $sum_rating . ' points';
     $note = "{ $user_name } ($user_email) had rating for your seminar: $post_title (#$seminar_post_id) - total: $sum_rating points";
+
 
     $transaction_id = memberfun_add_points($host_user_id, $sum_rating, $note, memberfun_get_first_admin_id());
 
