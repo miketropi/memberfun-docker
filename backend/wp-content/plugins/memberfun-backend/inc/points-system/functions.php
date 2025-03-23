@@ -340,3 +340,34 @@ function memberfun_delete_points_transaction($transaction_id) {
 
     return true;
 }
+
+/**
+ * Get user rank by points
+ * 
+ * @param int $user_id The user ID to get rank for
+ * @return int The user's rank
+ */
+function memberfun_get_user_rank($user_id) {
+    global $wpdb;
+    
+    $table_name = memberfun_points_get_table_name();
+    
+    // First get total points for all users
+    $query = "SELECT user_id, SUM(points) as total_points 
+             FROM $table_name 
+             GROUP BY user_id 
+             ORDER BY total_points DESC";
+    
+    $results = $wpdb->get_results($query);
+    
+    // Find rank of requested user
+    $rank = 1;
+    foreach ($results as $result) {
+        if ($result->user_id == $user_id) {
+            return $rank;
+        }
+        $rank++;
+    }
+    
+    return 0; // User not found
+}

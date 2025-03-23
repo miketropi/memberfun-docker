@@ -23,6 +23,9 @@ const useUserStore = create(
           state.userData = {
             id: response.id,
             name: response.name,
+            first_name: response.first_name || '',
+            last_name: response.last_name || '',
+            description: response.description || '',
             email: response.email || '',
             username: response.username,
             avatar: response.avatar_urls?.['96'] || '',

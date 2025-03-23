@@ -29,6 +29,34 @@ function memberfun_points_register_api_routes() {
             ),
         ),
     ));
+
+    // rest api get user rank
+    register_rest_route($namespace, '/points/user/(?P<user_id>\d+)/rank', array(
+        'methods'             => WP_REST_Server::READABLE,
+        'callback'            => 'memberfun_points_api_get_user_rank',
+        'permission_callback' => 'memberfun_points_api_permissions_check',
+        'args'                => array(
+            'user_id' => array(
+                'validate_callback' => function($param) {
+                    return is_numeric($param);
+                }
+            ),
+        ),
+    ));
+
+    // rest api get user points and rank
+    register_rest_route($namespace, '/points/user/(?P<user_id>\d+)/points-and-rank', array(
+        'methods'             => WP_REST_Server::READABLE,
+        'callback'            => 'memberfun_points_api_get_user_points_and_rank',
+        'permission_callback' => 'memberfun_points_api_permissions_check',
+        'args'                => array(
+            'user_id' => array(
+                'validate_callback' => function($param) {
+                    return is_numeric($param);
+                }
+            ),
+        ),
+    ));
     
     // Register route for getting user transactions
     register_rest_route($namespace, '/points/user/(?P<user_id>\d+)/transactions', array(
@@ -111,6 +139,33 @@ function memberfun_points_register_api_routes() {
             ),
         ),
     ));
+}
+
+// memberfun_points_api_get_user_points_and_rank
+function memberfun_points_api_get_user_points_and_rank($request) {
+    $user_id = $request->get_param('user_id');
+    $points = memberfun_get_user_points($user_id);
+    $rank = memberfun_get_user_rank($user_id);
+    return new WP_REST_Response(array(
+        'user_id' => $user_id,
+        'points' => $points,
+        'rank' => $rank,
+    ), 200);
+}
+
+/**
+ * API callback for getting user rank
+ * 
+ * @param WP_REST_Request $request The request object
+ * @return WP_REST_Response The response
+ */
+function memberfun_points_api_get_user_rank($request) {
+    $user_id = $request->get_param('user_id');
+    $rank = memberfun_get_user_rank($user_id);
+    return new WP_REST_Response(array(
+        'user_id' => $user_id,
+        'rank' => $rank,
+    ), 200);
 }
 
 /**

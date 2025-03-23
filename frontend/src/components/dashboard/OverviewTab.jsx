@@ -1,6 +1,33 @@
+import { useEffect, useState } from 'react';
 import React from 'react';
+import { pointsAPI } from '../../api/apiService';
+import UserRank from '../UserRank';
 
 const OverviewTab = ({ userData }) => {
+  const [activityStats, setActivityStats] = useState([
+    { label: 'Member Points', value: 0 },
+    { label: 'Ranking', value: 'N/A' },
+  ]);
+
+  useEffect(() => {
+    const fetchActivityStats = async () => {
+      try {
+        const response = await pointsAPI.getUserPointsAndRank(userData.id);
+        // console.log(response);
+        setActivityStats([
+          { label: 'Member Points', value: response.points },
+          { label: 'Ranking', value: <UserRank rank={ response.rank } /> },
+        ]);
+      } catch (error) {
+        console.error('Error fetching activity stats:', error);
+      }
+    };
+
+    fetchActivityStats();
+  }, [userData?.id]);
+  
+  
+ 
   const membershipDetails = [
     { label: 'Role', value: userData?.membershipType || 'Standard' },
     { label: 'Status', value: userData?.membershipStatus || 'Active' },
@@ -8,10 +35,10 @@ const OverviewTab = ({ userData }) => {
     { label: 'Next Billing', value: userData?.nextBillingDate || 'N/A' }
   ];
   
-  const activityStats = [
-    { label: 'Member Points', value: 0 },
-    { label: 'Ranking', value: 'N/A' },
-  ];
+  // const activityStats = [
+  //   { label: 'Member Points', value: 0 },
+  //   { label: 'Ranking', value: 'N/A' },
+  // ];
   
   const recentActivities = [
     { id: 1, title: 'Logged in from new device', time: '2 days ago', icon: 'clock' },
@@ -60,10 +87,10 @@ const StatCard = ({ title, items }) => (
     <h3 className="text-lg font-medium text-gray-800 mb-4">{title}</h3>
     <div className="space-y-3">
       {items.map((item, index) => (
-        <p key={index} className="flex justify-between">
-          <span className="text-gray-500">{item.label}:</span>
-          <span className="font-medium text-gray-800">{item.value}</span>
-        </p>
+        <div key={index} className="flex justify-between items-center">
+          <div className="text-gray-500">{item.label}:</div>
+          <div className="font-medium text-gray-800">{item.value}</div>
+        </div>
       ))}
     </div>
   </div>

@@ -119,3 +119,8 @@ function memberfun_backend_send_email_to_user($user_id) {
     $headers = array('Content-Type: text/html; charset=UTF-8');
     wp_mail($to, $subject, $message, $headers);
 }
+
+// add_action('init', function() {
+//     $result = memberfun_get_user_rank(5);
+//     var_dump($result);
+// });

@@ -94,6 +94,15 @@ const authAPI = {
   logout: () => {
     localStorage.removeItem('auth-token');
   },
+
+  forgotPassword: async (email) => {
+    try {
+      const response = await api.post('/wp/v2/users/forgot-password', { email });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 };
 
 // Users API
@@ -109,7 +118,7 @@ const usersAPI = {
 
   updateUser: async (userId, userData) => {
     try {
-      const response = await api.put(`/wp/v2/users/${userId}`, userData);
+      const response = await api.put(`/wp/v2/users/${userId}`, { user_data: userData });
       return response.data;
     } catch (error) {
       throw error;
@@ -315,5 +324,91 @@ const commentsAPI = {
   }
 };
 
+// Points System API
+const pointsAPI = {
+  // Get user points
+  getUserPoints: async (userId) => {
+    try {
+      const response = await api.get(`/memberfun/v1/points/user/${userId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Get user rank
+  getUserRank: async (userId) => {
+    try {
+      const response = await api.get(`/memberfun/v1/points/user/${userId}/rank`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getUserPointsAndRank: async (userId) => {
+    try {
+      const response = await api.get(`/memberfun/v1/points/user/${userId}/points-and-rank`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Get user transactions with pagination
+  getUserTransactions: async (userId, options = {}) => {
+    try {
+      const { perPage = 20, page = 1, type = '' } = options;
+      const response = await api.get(`/memberfun/v1/points/user/${userId}/transactions`, {
+        params: {
+          per_page: perPage,
+          page,
+          type
+        }
+      });
+      
+      return {
+        transactions: response.data,
+        pagination: {
+          total: parseInt(response.headers['x-wp-total']),
+          totalPages: parseInt(response.headers['x-wp-totalpages']),
+          currentPage: page
+        }
+      };
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Add points (Admin only)
+  addPoints: async (userId, points, note = '') => {
+    try {
+      const response = await api.post('/memberfun/v1/points/add', {
+        user_id: userId,
+        points,
+        note
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Deduct points (Admin only)
+  deductPoints: async (userId, points, note = '', allowNegative = false) => {
+    try {
+      const response = await api.post('/memberfun/v1/points/deduct', {
+        user_id: userId,
+        points,
+        note,
+        allow_negative: allowNegative
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+};
+
 // Export all APIs
-export { api, authAPI, usersAPI, postsAPI, seminarsAPI, commentsAPI }; 
+export { api, authAPI, usersAPI, postsAPI, seminarsAPI, commentsAPI, pointsAPI }; 

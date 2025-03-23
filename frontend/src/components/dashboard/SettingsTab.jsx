@@ -1,58 +1,78 @@
 import React, { useState } from 'react';
+import PasswordUpdateForm from './PasswordUpdateForm';
+import { usersAPI } from '../../api/apiService';
 
 const SettingsTab = ({ userData }) => {
   const [formData, setFormData] = useState({
-    name: userData?.name || '',
+    ID: userData?.id || '',
+    first_name: userData?.first_name || '',
+    last_name: userData?.last_name || '',
     email: userData?.email || '',
-    currentPassword: '',
-    newPassword: '',
-    emailNotifications: true,
-    smsNotifications: false,
-    marketingEmails: true
+    description: userData?.description || '',
   });
   
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value
     }));
   };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically call an API to update user settings
-    console.log('Form submitted:', formData);
-    // Show success message
-    alert('Settings updated successfully!');
+    let { email, ...rest } = formData;
+    const response = await usersAPI.updateUser(userData.id, rest);
+    console.log(response);
   };
   
   return (
     <div>
+      {/* { JSON.stringify(userData) } */}
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">Account Settings</h2>
-      
       <form onSubmit={handleSubmit} className="space-y-8">
         <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <h3 className="text-lg font-medium text-gray-800 mb-4">Profile Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:col-span-2 mb-4">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <p className="text-sm text-gray-600">
+                  To update your profile picture, please visit <a href="https://gravatar.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Gravatar.com</a> and set up an avatar using your email address. The avatar will automatically sync with your profile.
+                </p>
+              </div>
+            </div>
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                First Name
               </label>
               <input 
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+                id="first_name"
+                name="first_name"
+                value={formData.first_name}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                Last Name
+              </label>
+              <input 
+                type="text"
+                id="last_name"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="md:col-span-2">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 Email Address
               </label>
               <input 
+                disabled
                 type="email"
                 id="email"
                 name="email"
@@ -61,82 +81,19 @@ const SettingsTab = ({ userData }) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-          </div>
-        </section>
-        
-        <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-medium text-gray-800 mb-4">Password</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Current Password
+            <div className="md:col-span-2">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                Description
               </label>
-              <input 
-                type="password"
-                id="currentPassword"
-                name="currentPassword"
-                value={formData.currentPassword}
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
                 onChange={handleChange}
+                rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Tell us about yourself..."
               />
-            </div>
-            <div>
-              <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                New Password
-              </label>
-              <input 
-                type="password"
-                id="newPassword"
-                name="newPassword"
-                value={formData.newPassword}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-        </section>
-        
-        <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-medium text-gray-800 mb-4">Notification Preferences</h3>
-          <div className="space-y-3">
-            <div className="flex items-center">
-              <input 
-                type="checkbox"
-                id="emailNotifications"
-                name="emailNotifications"
-                checked={formData.emailNotifications}
-                onChange={handleChange}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="emailNotifications" className="ml-2 block text-sm text-gray-700">
-                Email Notifications
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input 
-                type="checkbox"
-                id="smsNotifications"
-                name="smsNotifications"
-                checked={formData.smsNotifications}
-                onChange={handleChange}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="smsNotifications" className="ml-2 block text-sm text-gray-700">
-                SMS Notifications
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input 
-                type="checkbox"
-                id="marketingEmails"
-                name="marketingEmails"
-                checked={formData.marketingEmails}
-                onChange={handleChange}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="marketingEmails" className="ml-2 block text-sm text-gray-700">
-                Marketing Emails
-              </label>
             </div>
           </div>
         </section>
@@ -150,6 +107,8 @@ const SettingsTab = ({ userData }) => {
           </button>
         </div>
       </form>
+
+      <PasswordUpdateForm />
     </div>
   );
 };
