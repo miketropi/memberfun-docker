@@ -173,13 +173,16 @@ class MemberFun_Social_Auth {
         // $redirect_url = home_url('/?auth_token=' . $token);
         
         $user_info['token'] = $token;
+        $options_general = get_option('memberfun_general');
+        $frontend_url = isset($options_general['frontend_url']) ? $options_general['frontend_url'] : 'http://localhost:5173/';
+
         $redirect_url = add_query_arg([
           // 'user_info' => $user_info
           'id' => $user_info['id'],
           'email' => $user_info['email'],
           'name' => $user_info['name'],
           'token' => $token,
-        ], 'http://localhost:5173/social-auth-callback/');
+        ], $frontend_url . "social-auth-callback/");
         // $redirect_url = 'http://localhost:5173/social-auth-callback/' . $token;
         wp_redirect($redirect_url);
         exit;

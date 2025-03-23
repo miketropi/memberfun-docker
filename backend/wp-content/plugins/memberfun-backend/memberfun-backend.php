@@ -40,6 +40,7 @@ require_once MEMBERFUN_BACKEND_DIR . 'inc/social-auth.php';
 require_once MEMBERFUN_BACKEND_DIR . 'inc/points-system/index.php';
 require_once MEMBERFUN_BACKEND_DIR . 'inc/semina/index.php';
 require_once MEMBERFUN_BACKEND_DIR . 'inc/comments/index.php';
+require_once MEMBERFUN_BACKEND_DIR . 'options.php';
 
 // Enqueue scripts
 function memberfun_backend_enqueue_scripts() {
