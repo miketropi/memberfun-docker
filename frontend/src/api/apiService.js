@@ -419,5 +419,155 @@ const pointsAPI = {
   }
 };
 
+// Challenges & Submissions API
+const challengesAPI = {
+  // Get all challenges with optional filtering
+  getChallenges: async (params = {}) => {
+    try {
+      const response = await api.get('/wp/v2/challenge', { params });
+      return response
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Get a single challenge by ID
+  getChallenge: async (challengeId) => {
+    try {
+      const response = await api.get(`/wp/v2/challenge/${challengeId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Create a new challenge (Admin only)
+  createChallenge: async (challengeData) => {
+    try {
+      const response = await api.post('/wp/v2/challenge', challengeData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Update an existing challenge (Admin only)
+  updateChallenge: async (challengeId, challengeData) => {
+    try {
+      const response = await api.put(`/wp/v2/challenge/${challengeId}`, challengeData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Delete a challenge (Admin only)
+  deleteChallenge: async (challengeId) => {
+    try {
+      const response = await api.delete(`/wp/v2/challenge/${challengeId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Get challenges by category
+  getChallengesByCategory: async (categoryId, params = {}) => {
+    try {
+      const response = await api.get('/wp/v2/challenge', {
+        params: {
+          challenge_category: categoryId,
+          ...params
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+};
+
+const submissionsAPI = {
+  // Get all submissions with optional filtering
+  getSubmissions: async (params = {}) => {
+    try {
+      const response = await api.get('/wp/v2/submission', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Get a single submission by ID
+  getSubmission: async (submissionId) => {
+    try {
+      const response = await api.get(`/wp/v2/submission/${submissionId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Create a new submission
+  createSubmission: async (submissionData) => {
+    try {
+      const response = await api.post('/wp/v2/submission', submissionData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Update an existing submission
+  updateSubmission: async (submissionId, submissionData) => {
+    try {
+      const response = await api.put(`/wp/v2/submission/${submissionId}`, submissionData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Delete a submission
+  deleteSubmission: async (submissionId) => {
+    try {
+      const response = await api.delete(`/wp/v2/submission/${submissionId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Get submissions by challenge
+  getSubmissionsByChallenge: async (challengeId, params = {}) => {
+    try {
+      const response = await api.get('/wp/v2/submission', {
+        params: {
+          challenge: challengeId,
+          ...params
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Get submissions by user
+  getSubmissionsByUser: async (userId, params = {}) => {
+    try {
+      const response = await api.get('/wp/v2/submission', {
+        params: {
+          author: userId,
+          ...params
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+};
+
 // Export all APIs
-export { api, authAPI, usersAPI, postsAPI, seminarsAPI, commentsAPI, pointsAPI }; 
+export { api, authAPI, usersAPI, postsAPI, seminarsAPI, commentsAPI, pointsAPI, challengesAPI, submissionsAPI }; 

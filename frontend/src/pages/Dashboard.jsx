@@ -10,7 +10,7 @@ import NotificationsTab from '../components/dashboard/NotificationsTab';
 import SettingsTab from '../components/dashboard/SettingsTab';
 import LoadingSpinner from '../components/dashboard/LoadingSpinner';
 import SeminarsTab from '../components/dashboard/SeminarsTab';
-
+import ChallengesTab from '../components/challenges/ChallengesTab';
 const Dashboard = () => {
   const { isAuthenticated } = useAuthStore();
   const { userData, isLoading: userLoading, fetchUserData } = useUserStore();
@@ -82,6 +82,8 @@ const Dashboard = () => {
     switch (activeTab) {
       case 'overview':
         return <OverviewTab userData={userData} />;
+      case 'challenges':
+        return <ChallengesTab />;
       case 'seminars':
         return <SeminarsTab />;
       case 'documents':

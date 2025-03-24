@@ -354,3 +354,138 @@ All code should follow the [WordPress Coding Standards](https://developer.wordpr
 - Phase 5: 1 day
 
 Total estimated development time: 6 days
+
+# Challenge & Submission Custom Post Types - Development Task List
+
+## Overview
+This document outlines the step-by-step development tasks for implementing the Challenge and Submission custom post types feature for the MemberFun WordPress plugin. This feature will allow administrators to create and manage coding challenges, and users to submit their solutions.
+
+## Development Tasks
+
+### Phase 1: Challenge Custom Post Type Setup
+
+1. **Register Challenge Post Type**
+   - [ ] Define labels for the 'Challenge' post type
+   - [ ] Register post type with appropriate arguments (supports, menu position, icon)
+   - [ ] Enable REST API support for the post type
+   - [ ] Set up proper rewrite rules and permalinks
+   - [ ] Add custom capabilities for managing challenges
+
+2. **Meta Fields Setup**
+   - [ ] Register meta box for challenge details
+   - [ ] Create number field for maximum score
+   - [ ] Implement submission deadline toggle and datetime field
+   - [ ] Add save functions with proper validation and sanitization
+   - [ ] Register meta fields for REST API access
+
+3. **Taxonomy Setup**
+   - [ ] Register Challenge Category taxonomy
+   - [ ] Set up hierarchical structure
+   - [ ] Enable REST API support for taxonomy
+   - [ ] Configure proper rewrite rules
+
+### Phase 2: Submission Custom Post Type Setup
+
+4. **Register Submission Post Type**
+   - [ ] Define labels for the 'Submission' post type
+   - [ ] Register post type with appropriate arguments
+   - [ ] Enable REST API support
+   - [ ] Set up proper rewrite rules
+   - [ ] Add custom capabilities
+
+5. **Meta Fields Setup**
+   - [ ] Register meta box for submission details
+   - [ ] Create challenge selection dropdown
+   - [ ] Add demo URL field with validation
+   - [ ] Implement demo video URL field
+   - [ ] Add save functions with validation
+   - [ ] Register meta fields for REST API
+
+### Phase 3: Admin Interface Enhancement
+
+6. **Challenge Admin Features**
+   - [ ] Add custom columns to challenge list view
+   - [ ] Implement sortable columns
+   - [ ] Create filters for categories
+   - [ ] Add quick edit support
+   - [ ] Implement bulk actions
+
+7. **Submission Admin Features**
+   - [ ] Add custom columns to submission list view
+   - [ ] Show associated challenge and demo URL
+   - [ ] Implement sorting by challenge
+   - [ ] Add filters for challenge and status
+   - [ ] Create bulk actions
+
+### Phase 4: REST API Implementation
+
+8. **Challenge API Endpoints**
+   - [ ] Configure default WP REST API endpoints
+   - [ ] Add custom fields to API response
+   - [ ] Implement proper authentication
+   - [ ] Add parameter validation
+   - [ ] Create comprehensive response formatting
+
+9. **Submission API Endpoints**
+   - [ ] Configure default WP REST API endpoints
+   - [ ] Add custom fields to API response
+   - [ ] Implement proper authentication
+   - [ ] Add parameter validation
+   - [ ] Create comprehensive response formatting
+
+10. **API Security**
+    - [ ] Implement proper authentication checks
+    - [ ] Add capability verification
+    - [ ] Set up rate limiting
+    - [ ] Ensure proper data validation
+    - [ ] Test with various user roles
+
+### Phase 5: Testing and Refinement
+
+11. **Testing**
+    - [ ] Test custom post type registration
+    - [ ] Verify meta fields save and display
+    - [ ] Test REST API endpoints
+    - [ ] Check security measures
+    - [ ] Test with different user roles
+    - [ ] Verify deadline functionality
+
+12. **Performance Optimization**
+    - [ ] Review database queries
+    - [ ] Implement caching where appropriate
+    - [ ] Optimize large dataset handling
+    - [ ] Test with many challenges/submissions
+
+### Phase 6: Documentation and Deployment
+
+13. **Documentation**
+    - [ ] Create inline code documentation
+    - [ ] Write user documentation
+    - [ ] Document API endpoints
+    - [ ] Create developer documentation
+    - [ ] Update plugin readme
+
+14. **Final Review and Deployment**
+    - [ ] Conduct final code review
+    - [ ] Check WordPress coding standards
+    - [ ] Verify WordPress compatibility
+    - [ ] Test with popular themes/plugins
+    - [ ] Prepare for deployment
+
+## Coding Standards
+All code should follow the [WordPress Coding Standards](https://developer.wordpress.org/coding-standards/):
+- Use proper prefixing for functions and variables (memberfun_challenge_*)
+- Follow WordPress PHP Documentation Standards
+- Ensure proper sanitization and validation
+- Use prepared statements for queries
+- Follow REST API best practices
+
+## Timeline
+- Phase 1: 2 days
+- Phase 2: 2 days
+- Phase 3: 2 days
+- Phase 4: 2 days
+- Phase 5: 2 days
+- Phase 6: 1 day
+
+Total estimated development time: 11 days

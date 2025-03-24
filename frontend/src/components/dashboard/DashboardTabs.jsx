@@ -1,15 +1,16 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, FileText, Bell, Settings, Calendar } from 'lucide-react';
+import { Home, FileText, Bell, Settings, Calendar, Gamepad2 } from 'lucide-react';
 
 const DashboardTabs = ({ notifications = [] }) => {
   const unreadCount = notifications.filter(n => !n.read).length;
   
   const tabs = [
     { id: 'overview', label: 'Overview', icon: 'home', path: '/dashboard/overview' },
+    { id: 'challenges', label: 'Challenges', icon: 'gamepad', path: '/dashboard/challenges' },
     { id: 'seminars', label: 'Seminars', icon: 'calendar', path: '/dashboard/seminars' },
-    { id: 'documents', label: 'Documents', icon: 'document', path: '/dashboard/documents' },
-    { id: 'notifications', label: 'Notifications', icon: 'bell', badge: unreadCount, path: '/dashboard/notifications' },
+    // { id: 'documents', label: 'Documents', icon: 'document', path: '/dashboard/documents' },
+    // { id: 'notifications', label: 'Notifications', icon: 'bell', badge: unreadCount, path: '/dashboard/notifications' },
     { id: 'settings', label: 'Settings', icon: 'settings', path: '/dashboard/settings' }
   ];
   
@@ -44,6 +45,8 @@ const getIcon = (iconName) => {
   switch (iconName) {
     case 'home':
       return <Home className="h-5 w-5" />;
+    case 'gamepad':
+      return <Gamepad2 className="h-5 w-5" />;
     case 'document':
       return <FileText className="h-5 w-5" />;
     case 'bell':
