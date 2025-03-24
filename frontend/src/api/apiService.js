@@ -124,6 +124,15 @@ const usersAPI = {
       throw error;
     }
   },
+
+  updatePassword: async (userId, password) => {
+    try {
+      const response = await api.post('/wp/v2/users/update-password', { id: userId, password });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 };
 
 // Posts API

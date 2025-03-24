@@ -38,7 +38,43 @@ add_action('rest_api_init', function () {
             )
         )
     ));
+
+    // rest api update user password
+    register_rest_route('wp/v2', '/users/update-password', array(
+        'methods' => 'POST',
+        'callback' => 'memberfun_update_password',
+        'permission_callback' => function($request) {
+            return current_user_can('edit_user', $request['id']);
+        },
+        'args' => array(
+            'id' => array(
+                'validate_callback' => function($value) {
+                    return is_numeric($value);
+                }
+            ),
+            'password' => array(
+                'validate_callback' => function($value) {
+                    return is_string($value);
+                }
+            )
+        )
+    ));
 });
+
+// memberfun_update_password
+function memberfun_update_password($request) {
+    $params = $request->get_params();
+    $user_id = $params['id'];
+    $password = $params['password'];
+
+    // update user password
+    wp_set_password($password, $user_id);
+
+    return new WP_REST_Response(array(
+        'status' => 'success',
+        'message' => __('Password updated successfully', 'memberfun-backend')
+    ), 200);
+}
 
 // memberfun_update_user
 function memberfun_update_user($request) {
