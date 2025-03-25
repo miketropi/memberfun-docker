@@ -237,3 +237,36 @@ button:focus-visible {
 .dark .prose tr:hover {
   background-color: #374151;
 }
+
+/* Code styling for .prose */
+.prose code {
+  background-color: #f3f4f6;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25em;
+  font-size: 0.875em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  color: #111827;
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+}
+
+.dark .prose code {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+.prose p code,
+.prose li code,
+.prose h1 code,
+.prose h2 code,
+.prose h3 code,
+.prose h4 code,
+.prose h5 code,
+.prose h6 code {
+  word-break: break-word;
+}

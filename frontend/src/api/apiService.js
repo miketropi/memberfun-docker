@@ -489,9 +489,17 @@ const challengesAPI = {
 
 const submissionsAPI = {
   // Get all submissions with optional filtering
-  getSubmissions: async (params = {}) => {
+  // getSubmissions: async (params = {}) => {
+  //   try {
+  //     const response = await api.get('/wp/v2/submission', { params });
+  //     return response.data;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
+  getSubmissions: async (challengeId) => {
     try {
-      const response = await api.get('/wp/v2/submission', { params });
+      const response = await api.get(`/memberfun/v1/submissions/${challengeId}`);
       return response.data;
     } catch (error) {
       throw error;
@@ -509,9 +517,17 @@ const submissionsAPI = {
   },
 
   // Create a new submission
+  // createSubmission: async (submissionData) => {
+  //   try {
+  //     const response = await api.post('/wp/v2/submission', submissionData);
+  //     return response.data;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
   createSubmission: async (submissionData) => {
     try {
-      const response = await api.post('/wp/v2/submission', submissionData);
+      const response = await api.post('/memberfun/v1/create-submission', submissionData);
       return response.data;
     } catch (error) {
       throw error;

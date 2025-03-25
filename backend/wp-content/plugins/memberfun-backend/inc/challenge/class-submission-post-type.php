@@ -18,6 +18,7 @@ class Submission_Post_Type {
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
         add_action('save_post', array($this, 'save_meta_boxes'));
         add_action('rest_api_init', array($this, 'register_rest_fields'));
+        add_action('rest_api_init', array($this, 'register_rest_custom_routes'));
         add_filter('manage_submission_posts_columns', array($this, 'add_custom_columns'));
         add_action('manage_submission_posts_custom_column', array($this, 'render_custom_columns'), 10, 2);
         add_filter('use_block_editor_for_post_type', array($this, 'disable_gutenberg'), 10, 2);
@@ -199,6 +200,25 @@ class Submission_Post_Type {
      * Register REST API fields
      */
     public function register_rest_fields() {
+
+        // field author
+        register_rest_field('submission', 'author', array(
+            'get_callback' => function($post) {
+                // get post author by post id
+                $author = get_post_field('post_author', $post['id']);
+                $display_name = get_the_author_meta( 'display_name' , $author ); 
+
+                return [
+                    'id' => $author,
+                    'display_name' => $display_name
+                ];
+            },
+            'schema' => array(
+                'description' => 'Author',
+                'type' => 'array'
+            )
+        ));
+
         register_rest_field('submission', 'challenge_id', array(
             'get_callback' => function($post) {
                 return get_post_meta($post['id'], '_submission_challenge_id', true);
@@ -229,6 +249,74 @@ class Submission_Post_Type {
                 'type' => 'string',
                 'format' => 'uri'
             )
+        ));
+    }
+
+    public function register_rest_custom_routes() {
+        // get all submissions by challenge id
+        register_rest_route('memberfun/v1', '/submissions/(?P<challenge_id>\d+)', array(
+            'methods' => 'GET',
+            'callback' => function($request) {
+                $submissions = get_posts(array(
+                    'post_type' => 'submission',
+                    'meta_key' => '_submission_challenge_id',
+                    'meta_value' => $request['challenge_id'],
+                    'posts_per_page' => -1
+                ));
+
+                return array_map(function($submission) {
+                    return [
+                        'id' => $submission->ID,
+                        'title' => $submission->post_title,
+                        'content' => wpautop($submission->post_content),
+                        'date' => $submission->post_date,
+                        'author' => [
+                            'id' => get_post_field('post_author', $submission->ID),
+                            'email' => get_the_author_meta( 'user_email' , get_post_field('post_author', $submission->ID) ),
+                            'display_name' => get_the_author_meta( 'display_name' , get_post_field('post_author', $submission->ID) ),
+                            'gravatar' => get_avatar_url( get_post_field('post_author', $submission->ID) )
+                        ],
+                        'challenge_id' => get_post_meta($submission->ID, '_submission_challenge_id', true),
+                        'demo_url' => get_post_meta($submission->ID, '_submission_demo_url', true),
+                        'demo_video' => get_post_meta($submission->ID, '_submission_demo_video', true)
+                    ];
+                }, $submissions);
+            },
+            'permission_callback' => function() {
+                return current_user_can('edit_posts');
+            }
+        ));
+
+        register_rest_route('memberfun/v1', '/create-submission', array(
+            'methods' => 'POST',
+            'callback' => function($request) {
+                $data = $request->get_json_params();
+                $submission = array(
+                    'post_title' => $data['title'],
+                    'post_content' => $data['content'],
+                    'post_status' => 'publish',
+                    'post_type' => 'submission',
+                    'meta_input' => array(
+                        '_submission_challenge_id' => $data['meta']['_submission_challenge_id'],
+                        '_submission_demo_url' => $data['meta']['_submission_demo_url'],
+                        '_submission_demo_video' => $data['meta']['_submission_demo_video']
+                    )
+                );
+
+                $submission_id = wp_insert_post($submission);
+
+                if (is_wp_error($submission_id)) {
+                    return new WP_REST_Response($submission_id->get_error_message(), 400);
+                }
+
+                return new WP_REST_Response([
+                    'id' => $submission_id,
+                    'status' => 'success'
+                ], 200);
+            },
+            'permission_callback' => function() {
+                return current_user_can('edit_posts');
+            }
         ));
     }
 }

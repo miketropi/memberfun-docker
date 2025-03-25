@@ -64,16 +64,21 @@ const SubmissionForm = ({ challengeId, onSuccess }) => {
       const submissionData = {
         title: formData.title,
         content: formData.content,
-        challenge_id: challengeId,
+        status: 'publish',
         meta: {
-          demo_url: formData.demo_url,
-          demo_video: formData.demo_video
+          _submission_challenge_id: challengeId,
+          _submission_demo_url: formData.demo_url,
+          _submission_demo_video: formData.demo_video
         }
       };
 
-      await submissionsAPI.createSubmission(submissionData);
-      setSuccess(true);
-      onSuccess?.();
+      const response = await submissionsAPI.createSubmission(submissionData);
+      if (response.status === 'success') {
+        setSuccess(true);
+        onSuccess?.();
+      } else {
+        setError(response.message || 'Failed to submit solution');
+      }
     } catch (err) {
       setError(err.message || 'Failed to submit solution');
     } finally {
@@ -97,7 +102,7 @@ const SubmissionForm = ({ challengeId, onSuccess }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
+    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 border">
       <div className="mb-6">
         <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
           Solution Title
