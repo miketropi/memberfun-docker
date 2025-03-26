@@ -1,26 +1,6 @@
 version: '3.8'
 
 services:
-  traefik:
-    image: traefik:v2.10
-    container_name: traefik
-    command:
-      - "--api.insecure=false"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-    ports:
-      - "${TRAEFIK_PORT}:80"
-      - "${TRAEFIK_SECURE_PORT}:443"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "letsencrypt:/letsencrypt"
-    networks:
-      - web
 
   frontend:
     build:
@@ -33,12 +13,18 @@ services:
     volumes:
       - ./frontend:/app
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=${CERT_RESOLVER}"
+      - traefik.enable=true
+      - traefik.http.routers.memberfun-http.rule=Host(`memberfun.${DOMAIN}`)
+      - traefik.http.routers.memberfun-http.entrypoints=http
+      - traefik.http.routers.memberfun-http.middlewares=https-redirect
+      - traefik.http.routers.memberfun-https.rule=Host(`memberfun.${DOMAIN}`)
+      - traefik.http.routers.memberfun-https.entrypoints=https
+      - traefik.http.routers.memberfun-https.tls=true
+      - traefik.http.routers.memberfun-https.tls.certresolver=le
+      - traefik.http.routers.memberfun-https.service=memberfun-service
+      - traefik.http.services.memberfun-service.loadbalancer.server.port=5173
     networks:
-      - web
+      - traefik-public
 
   wordpress:
     image: wordpress:latest
@@ -56,12 +42,18 @@ services:
       - mysql
       - redis
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.wordpress.rule=Host(`api.${DOMAIN}`)"
-      - "traefik.http.routers.wordpress.entrypoints=websecure"
-      - "traefik.http.routers.wordpress.tls.certresolver=${CERT_RESOLVER}"
+      - traefik.enable=true
+      - traefik.http.routers.wordpress.rule=Host(`memberfun-api.${DOMAIN}`)
+      - traefik.http.routers.wordpress.entrypoints=http
+      - traefik.http.routers.wordpress.middlewares=https-redirect
+      - traefik.http.routers.wordpress-https.rule=Host(`memberfun-api.${DOMAIN}`)
+      - traefik.http.routers.wordpress-https.entrypoints=https
+      - traefik.http.routers.wordpress-https.tls=true
+      - traefik.http.routers.wordpress-https.tls.certresolver=le
+      - traefik.http.routers.wordpress-https.service=wordpress-service
+      - traefik.http.services.wordpress-service.loadbalancer.server.port=8000
     networks:
-      - web
+      - traefik-public
 
   mysql:
     image: mysql:8
@@ -74,18 +66,23 @@ services:
     volumes:
       - mysql:/var/lib/mysql
     networks:
-      - web
+      - traefik-public
 
   adminer:
     image: adminer
     container_name: adminer
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.adminer.rule=Host(`adminer.${DOMAIN}`)"
-      - "traefik.http.routers.adminer.entrypoints=websecure"
-      - "traefik.http.routers.adminer.tls.certresolver=${CERT_RESOLVER}"
+      - traefik.enable=true
+      - traefik.http.routers.adminer.rule=Host(`memberfun-adminer.${DOMAIN}`)
+      - traefik.http.routers.adminer.entrypoints=http
+      - traefik.http.routers.adminer.middlewares=https-redirect
+      - traefik.http.routers.adminer-https.rule=Host(`memberfun-adminer.${DOMAIN}`)
+      - traefik.http.routers.adminer-https.entrypoints=https
+      - traefik.http.routers.adminer-https.tls=true
+      - traefik.http.routers.adminer-https.tls.certresolver=le
+      - traefik.http.services.adminer-service.loadbalancer.server.port=8080
     networks:
-      - web
+      - traefik-public
 
   redis:
     image: redis:alpine
@@ -94,14 +91,13 @@ services:
     volumes:
       - redis:/data
     networks:
-      - web
+      - traefik-public
 
 networks:
-  web:
-    driver: bridge
+  traefik-public:
+    external: true
 
 volumes:
   wordpress:
   mysql:
   redis:
-  letsencrypt:

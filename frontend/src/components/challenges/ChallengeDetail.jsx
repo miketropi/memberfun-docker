@@ -288,66 +288,6 @@ const ChallengeDetail = ({ challengeId }) => {
               </div>
             )}
             
-            {/* {submissions.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                    <FileText className="h-5 w-5 mr-2 text-blue-500 flex-shrink-0" />
-                    Submissions
-                  </h3>
-                </div>
-                <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                  {submissions.map(submission => (
-                    <div key={submission.id} className="p-5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-750">
-                      <h4 className="text-md font-bold text-gray-900 dark:text-white">
-                        {submission.title.rendered}
-                      </h4>
-                      <div 
-                        className="text-gray-600 dark:text-gray-300 mb-3 prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ __html: submission.content.rendered }}
-                      />
-                      <div className="flex flex-wrap items-center gap-4 mt-4 text-sm">
-                        {submission.author && (
-                          <span className="inline-flex items-center text-gray-500 dark:text-gray-400">
-                            <span className="font-medium">By {submission.author.display_name}</span>
-                          </span>
-                        )}
-                        {submission.date && (
-                          <span className="inline-flex items-center text-gray-500 dark:text-gray-400">
-                            <Clock className="h-4 w-4 mr-1 opacity-70" />
-                            {format(submission.date, 'MMM d, yyyy')}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-wrap gap-3 mt-4">
-                        {submission.demo_url && (
-                          <a
-                            href={submission.demo_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-md text-sm font-medium hover:bg-blue-100 transition-colors dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50"
-                          >
-                            <ExternalLink className="h-4 w-4 mr-1.5" />
-                            View Demo
-                          </a>
-                        )}
-                        {submission.demo_video && (
-                          <a
-                            href={submission.demo_video}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center px-3 py-1.5 bg-red-50 text-red-600 rounded-md text-sm font-medium hover:bg-red-100 transition-colors dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
-                          >
-                            <Play className="h-4 w-4 mr-1.5" />
-                            Watch Video
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )} */}
           </div>
         </div>
       </div>
