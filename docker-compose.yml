@@ -27,6 +27,7 @@ services:
       - traefik.http.services.memberfun-service.loadbalancer.server.port=5173
     networks:
       - traefik-public
+    command: npm run dev -- --host 0.0.0.0
 
   wordpress:
     image: wordpress:latest
