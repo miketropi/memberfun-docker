@@ -5,6 +5,10 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    allowedHosts: [
+      'memberfun.beplus-agent.com', // Allow this specific host
+      '.beplus-agent.com'           // Wildcard to allow all subdomains (alternative)
+    ],
     host: '0.0.0.0',
     port: 5173,
     strictPort: true,   
