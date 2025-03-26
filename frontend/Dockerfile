@@ -1,22 +1,5 @@
-# Build stage
-FROM node:18-alpine as builder
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy source code
-COPY . .
-
-# Build the application
-RUN npm run build
-
 # Production stage
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -28,6 +11,9 @@ RUN npm install
 
 # Copy the rest of the application
 COPY . .
+
+# Build the project (if needed for production)
+RUN npm run build
 
 # Expose Vite dev server port
 EXPOSE 5173
