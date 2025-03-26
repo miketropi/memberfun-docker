@@ -33,6 +33,7 @@ services:
   wordpress:
     image: wordpress:latest
     container_name: wordpress
+    command: sh -c "echo 'ServerName memberfun-api.${DOMAIN}' >> /etc/apache2/apache2.conf && exec docker-entrypoint.sh apache2-foreground"
     ports:
       - "8000:80"
     environment:
