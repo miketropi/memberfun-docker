@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 import { pointsAPI } from '../../api/apiService';
 import UserRank from '../UserRank';
+import { Beer } from 'lucide-react';
 
 const OverviewTab = ({ userData }) => {
   const [activityStats, setActivityStats] = useState([
@@ -41,9 +42,9 @@ const OverviewTab = ({ userData }) => {
   // ];
   
   const recentActivities = [
-    { id: 1, title: 'Logged in from new device', time: '2 days ago', icon: 'clock' },
-    { id: 2, title: 'Downloaded Member Benefits Guide', time: '5 days ago', icon: 'document' },
-    { id: 3, title: 'Received new message from admin', time: '1 week ago', icon: 'chat' }
+    // { id: 1, title: 'Logged in from new device', time: '2 days ago', icon: 'clock' },
+    // { id: 2, title: 'Downloaded Member Benefits Guide', time: '5 days ago', icon: 'document' },
+    { id: 1, title: 'Welcome to MemberFun!', time: 'N/A', icon: 'Beer' }
   ];
   
   return (
@@ -57,13 +58,13 @@ const OverviewTab = ({ userData }) => {
         <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
           <h3 className="text-lg font-medium text-gray-800 mb-4">Quick Actions</h3>
           <div className="space-y-3">
-            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition">
+            <button disabled={true} className="disabled:opacity-50 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition">
               Update Profile
             </button>
-            <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg transition">
+            <button disabled={true} className="disabled:opacity-50 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg transition">
               View Benefits
             </button>
-            <button className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg transition">
+            <button disabled={true} className="disabled:opacity-50 w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg transition">
               Contact Support
             </button>
           </div>
@@ -116,11 +117,8 @@ const ActivityItem = ({ activity }) => {
             <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
           </svg>
         )}
-        {activity.icon === 'chat' && (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
-            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
-          </svg>
+        {activity.icon === 'Beer' && (
+          <Beer className="h-5 w-5" />
         )}
       </div>
       <div>
