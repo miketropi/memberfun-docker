@@ -118,19 +118,38 @@ add_action('rest_api_init', 'memberfun_register_comments_rest_routes');
 function memberfun_get_comments($request) {
     $args = array(
         'post_id' => $request->get_param('post_id'),
-        'page' => $request->get_param('page'),
-        'per_page' => $request->get_param('per_page'),
-        'orderby' => $request->get_param('orderby'),
-        'order' => $request->get_param('order'),
-        'search' => $request->get_param('search'),
-        'status' => $request->get_param('status'),
+        'paged' => $request->get_param('page') ?? 1 ,
+        'number' => $request->get_param('per_page') ?? 10,
+        # 'offset' => $request->get_param('offset'),
+        // 'orderby' => $request->get_param('orderby'),
+        // 'order' => $request->get_param('order'),
+        // 'search' => $request->get_param('search'),
+        // 'status' => $request->get_param('status'),
+        // 'no_found_rows' => false,
+        'orderby' => 'comment_date',
+        'order' => 'DESC',
+        'status' => 'approve'
     );
 
+    // return new WP_REST_Response(array(
+    //     'args' => $args,
+    // ), 200);
+    
     // Remove empty values
     $args = array_filter($args);
+    $args['no_found_rows'] = false;
 
-    $comments_query = new WP_Comment_Query();
-    $comments = $comments_query->query($args);
+    // $comments_query = new WP_Comment_Query();
+    // $comments = $comments_query->query($args);
+    // $comments = new WP_Comment_Query($args);
+    $comments_query = new WP_Comment_Query( $args );
+    $comments = $comments_query->comments;
+
+    // return new WP_REST_Response(array(
+    //     'args' => $args,
+    //     'comments_query' => $comments_query,
+    // ), 200);
+
 
     if (empty($comments)) {
         return new WP_REST_Response(array(
@@ -141,7 +160,7 @@ function memberfun_get_comments($request) {
     }
 
     $total = $comments_query->found_comments;
-    $pages = ceil($total / $args['per_page']);
+    $pages = $comments_query->max_num_pages;
 
     $comments_data = array_map(function($comment) {
         return array(

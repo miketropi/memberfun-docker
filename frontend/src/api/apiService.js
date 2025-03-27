@@ -537,7 +537,7 @@ const submissionsAPI = {
   // Update an existing submission
   updateSubmission: async (submissionId, submissionData) => {
     try {
-      const response = await api.put(`/wp/v2/submission/${submissionId}`, submissionData);
+      const response = await api.put(`/memberfun/v1/update-submission/${submissionId}`, submissionData);
       return response.data;
     } catch (error) {
       throw error;

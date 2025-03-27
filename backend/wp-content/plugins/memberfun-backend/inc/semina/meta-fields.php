@@ -136,6 +136,7 @@ function memberfun_semina_details_meta_box_callback($post) {
     wp_nonce_field('memberfun_semina_save_meta', 'memberfun_semina_meta_nonce');
 
     // Get the current values if they exist
+    $seminar_double_points = get_post_meta($post->ID, '_memberfun_semina_double_points', true);
     $seminar_date = get_post_meta($post->ID, '_memberfun_semina_date', true);
     $seminar_time = get_post_meta($post->ID, '_memberfun_semina_time', true);
     $seminar_host = get_post_meta($post->ID, '_memberfun_semina_host', true);
@@ -148,6 +149,16 @@ function memberfun_semina_details_meta_box_callback($post) {
     
     ?>
     <div class="memberfun-semina-meta-box">
+
+        <p>
+            <label for="memberfun_semina_double_points"><?php _e('Allow Double Points', 'memberfun-backend'); ?>:</label>
+            <?php
+            $double_points = !empty($seminar_double_points) ? 'checked' : '';
+            ?>
+            <input type="checkbox" id="memberfun_semina_double_points" name="memberfun_semina_double_points" value="1" <?php echo $double_points; ?> />
+            <span class="description"><?php _e('Enable x2 points for this seminar', 'memberfun-backend'); ?></span>
+        </p>
+
         <p>
             <label for="memberfun_semina_date"><?php _e('Seminar Date', 'memberfun-backend'); ?>:</label>
             <input type="date" id="memberfun_semina_date" name="memberfun_semina_date" value="<?php echo esc_attr($date_value); ?>" class="widefat" required />
@@ -335,6 +346,13 @@ function memberfun_semina_save_meta($post_id, $post, $update) {
         return;
     }
     
+    // save double points
+    if (isset($_POST['memberfun_semina_double_points'])) {
+        update_post_meta($post_id, '_memberfun_semina_double_points', absint($_POST['memberfun_semina_double_points']));
+    } else {
+        delete_post_meta($post_id, '_memberfun_semina_double_points');
+    }
+
     // Save seminar details
     if (isset($_POST['memberfun_semina_date'])) {
         update_post_meta($post_id, '_memberfun_semina_date', sanitize_text_field($_POST['memberfun_semina_date']));
@@ -372,6 +390,16 @@ function memberfun_semina_save_meta($post_id, $post, $update) {
  * Register meta fields for REST API
  */
 function memberfun_semina_register_meta_fields() {
+    // register double points
+    register_post_meta('memberfun_semina', '_memberfun_semina_double_points', array(
+        'show_in_rest' => false,
+        'single' => true,
+        'type' => 'boolean',
+        'auth_callback' => function() {
+            return current_user_can('edit_posts');
+        }
+    ));
+
     register_post_meta('memberfun_semina', '_memberfun_semina_date', array(
         'show_in_rest' => [
             'schema' => [

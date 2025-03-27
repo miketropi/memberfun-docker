@@ -7,7 +7,7 @@ import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorMessage from '../common/ErrorMessage';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ChallengeDetail from './ChallengeDetail';
-
+import { format } from 'date-fns';
 const ChallengesList = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -116,6 +116,9 @@ const ChallengesList = () => {
                             Challenge
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Created Date
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Category
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -138,6 +141,9 @@ const ChallengesList = () => {
                                 )}
                                 <div className="font-medium text-gray-800 dark:text-gray-200" dangerouslySetInnerHTML={{ __html: challenge.title.rendered }} />
                               </div>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                              {format(new Date(challenge.date), 'dd/MM/yyyy HH:mm')}
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
                               {challenge.challenge_category && challenge.challenge_category.map(category => category.name).join(', ')}

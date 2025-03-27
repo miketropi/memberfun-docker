@@ -10,23 +10,31 @@ import {
   ExternalLink,
   Play,
   Pencil,
-  Trash2
+  Trash2,
+  MessageCircle
 } from 'lucide-react';
 import SubmissionForm from './SubmissionForm';
 import { challengesAPI, submissionsAPI } from '../../api/apiService';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import Popover from '../Popover';
+import Modal from '../Modal';
+import Comment from '../common/Comment';
+import useUserStore from '../../store/userStore';
+
 
 const ChallengeDetail = ({ challengeId }) => {
   // const { id } = useParams();
   const navigate = useNavigate();
+  const { userData } = useUserStore();
   const [challenge, setChallenge] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [submissions, setSubmissions] = useState([]);
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
-
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [submissionIdForComment, setSubmissionIdForComment] = useState(null);
+  const [submissionIdForEdit, setSubmissionIdForEdit] = useState(null);
   const fetchSubmissions = async () => {
     try {
       const response = await submissionsAPI.getSubmissions(challengeId);
@@ -160,104 +168,150 @@ const ChallengeDetail = ({ challengeId }) => {
             </div>
 
             {submissions.length > 0 && (
-              <div className="mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-                <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                    <FileText className="h-5 w-5 mr-2 text-blue-500 flex-shrink-0" />
-                    Submissions
-                  </h3>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 dark:bg-gray-750">
-                      <tr>
-                        <th style={{ width: '35%' }} className="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Title</th>
-                        <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th>
-                        <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Author</th>
-                        <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Demo URL</th>
-                        <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description Video</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                      {submissions.map(submission => (
-                        <tr key={submission.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-750">
-                          <td className="px-5 py-4">
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">
-                              <h4 className="text-md font-bold text-gray-900 dark:text-white mb-2"> {submission.title} </h4>
-                              <span className="text-sm text-gray-600 dark:text-gray-300"> {format(new Date(submission.date), 'MMMM d, yyyy • h:mm a')} </span>
-                              <div className="flex space-x-2 mt-2">
-                                <button 
-                                  className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded text-gray-700 bg-gray-100 hover:bg-blue-100 hover:text-blue-700 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-blue-800 dark:hover:text-blue-200 transition-all duration-200 shadow-sm"
-                                  title="Edit submission"
-                                >
-                                  <Pencil className="h-3.5 w-3.5 mr-1.5" /> Edit
-                                </button>
-                                <button 
-                                  className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded text-gray-700 bg-gray-100 hover:bg-red-100 hover:text-red-700 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-red-900 dark:hover:text-red-200 transition-all duration-200 shadow-sm"
-                                  title="Delete submission"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Delete
-                                </button>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-5 py-4">
-                            <Popover width={400} content={ <div 
-                              className="text-sm text-gray-600 dark:text-gray-300 prose prose-sm max-w-none px-4"
-                              dangerouslySetInnerHTML={{ __html: submission.content }}
-                            /> }>
-                              <button className="flex items-center text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
-                                <FileText className="h-4 w-4 mr-1" />
-                              </button>
-                            </Popover>
-                          </td>
-                          <td className="px-5 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <img 
-                                src={submission.author?.gravatar} 
-                                alt={submission.author?.display_name} 
-                                className="h-6 w-6 rounded-full object-cover shadow-sm mr-2" 
-                              />
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
-                                {submission.author?.display_name || 'Anonymous'}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-5 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-600 dark:text-gray-300">
-                              {
-                                submission.demo_url && (
-                                  <a href={submission.demo_url} target="_blank" rel="noopener noreferrer">
-                                    <ExternalLink className="h-4 w-4 mr-1 inline-block" /> View Demo
-                                  </a>
-                                )
-                              }
-                            </div>
-                          </td>
-                          <td className="px-5 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-600 dark:text-gray-300">
-                              {
-                                submission.demo_video && (
-                                  <a href={submission.demo_video} target="_blank" rel="noopener noreferrer">
-                                    <Play className="h-4 w-4 mr-1 inline-block" /> Watch Video
-                                  </a>
-                                )
-                              }
-                            </div>
-                          </td>
-                          
+              <>
+                <div className="mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                  <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                      <FileText className="h-5 w-5 mr-2 text-blue-500 flex-shrink-0" />
+                      Submissions
+                    </h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 dark:bg-gray-750">
+                        <tr>
+                          <th style={{ width: '35%' }} className="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Title</th>
+                          <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th>
+                          <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Author</th>
+                          <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Demo URL</th>
+                          <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description Video</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                        {submissions.map(submission => (
+                          <tr key={submission.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-750">
+                            <td className="px-5 py-4">
+                              <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                <h4 className="text-md font-bold text-gray-900 dark:text-white mb-2"> {submission.title} </h4>
+                                <span className="text-sm text-gray-600 dark:text-gray-300"> {format(new Date(submission.date), 'MMMM d, yyyy • h:mm a')} </span>
+                                <div className="flex space-x-2 mt-2">
+                                 
+                                  {
+                                    userData?.id == submission.author?.id && (
+                                      <>
+                                        <button 
+                                          className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded text-gray-700 bg-gray-100 hover:bg-blue-100 hover:text-blue-700 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-blue-800 dark:hover:text-blue-200 transition-all duration-200 shadow-sm"
+                                          title="Edit submission"
+                                          onClick={() => {
+                                            setShowSubmissionForm(true);
+                                            setSubmissionIdForEdit(submission.id);
+                                          }}
+                                        >
+                                          <Pencil className="h-3.5 w-3.5 mr-1.5" /> Edit
+                                        </button>
+                                      </>
+                                    )
+                                  }
+                                  {/* <button 
+                                    className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded text-gray-700 bg-gray-100 hover:bg-red-100 hover:text-red-700 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-red-900 dark:hover:text-red-200 transition-all duration-200 shadow-sm"
+                                    title="Delete submission"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Delete
+                                  </button> */}
+                                  {/* { button comment } */}
+                                  <button 
+                                    className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded text-gray-700 bg-gray-100 hover:bg-green-100 hover:text-green-700 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-green-900 dark:hover:text-green-200 transition-all duration-200 shadow-sm"
+                                    title="Comment"
+                                    onClick={() => {
+                                      setShowCommentModal(true);
+                                      setSubmissionIdForComment(submission.id);
+                                    }}
+                                  >
+                                    <MessageCircle className="h-3.5 w-3.5 mr-1.5" /> 
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                      {
+                                        submission.count_comments > 0 && (
+                                          submission.count_comments
+                                        )
+                                      } Comment(s)
+                                    </span>
+                                  </button>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-5 py-4">
+                              <Popover width={400} content={ <div 
+                                className="text-sm text-gray-600 dark:text-gray-300 prose prose-sm max-w-none px-4"
+                                dangerouslySetInnerHTML={{ __html: submission.content }}
+                              /> }>
+                                <button className="flex items-center text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+                                  <FileText className="h-4 w-4 mr-1" />
+                                </button>
+                              </Popover>
+                            </td>
+                            <td className="px-5 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <img 
+                                  src={submission.author?.gravatar} 
+                                  alt={submission.author?.display_name} 
+                                  className="h-6 w-6 rounded-full object-cover shadow-sm mr-2" 
+                                />
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
+                                  {submission.author?.display_name || 'Anonymous'}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-5 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-600 dark:text-gray-300">
+                                {
+                                  submission.demo_url && (
+                                    <a href={submission.demo_url} target="_blank" rel="noopener noreferrer">
+                                      <ExternalLink className="h-4 w-4 mr-1 inline-block" /> View Demo
+                                    </a>
+                                  )
+                                }
+                              </div>
+                            </td>
+                            <td className="px-5 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-600 dark:text-gray-300">
+                                {
+                                  submission.demo_video && (
+                                    <a href={submission.demo_video} target="_blank" rel="noopener noreferrer">
+                                      <Play className="h-4 w-4 mr-1 inline-block" /> Watch Video
+                                    </a>
+                                  )
+                                }
+                              </div>
+                            </td>
+                            
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
+                {/* { comment } */}
+                <Modal 
+                  title={ `Comments for "${submissions.find(submission => submission.id === submissionIdForComment)?.title}"` } 
+                  isOpen={showCommentModal} 
+                  size="xl"
+                  onClose={() => setShowCommentModal(false)}>
+                  {
+                    submissionIdForComment && (
+                      <Comment postId={submissionIdForComment} />
+                    )
+                  }
+                </Modal>
+              </>
             )}
 
             {!isExpired && (
               <div className="mb-12">
                 <button
-                  onClick={() => setShowSubmissionForm(!showSubmissionForm)}
+                  onClick={() => {
+                    setShowSubmissionForm(!showSubmissionForm);
+                    setSubmissionIdForEdit(null);
+                  }}
                   className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200"
                 >
                   {showSubmissionForm ? 'Cancel Submission' : 'Submit Solution'}
@@ -265,7 +319,7 @@ const ChallengeDetail = ({ challengeId }) => {
                 
                 {showSubmissionForm && (
                   <div className="mt-6">
-                    <SubmissionForm challengeId={challengeId} onSuccess={() => {
+                    <SubmissionForm challengeId={challengeId} submissionId={submissionIdForEdit} onSuccess={() => {
                       // setShowSubmissionForm(false);
                       console.log('submission success');
                       fetchSubmissions();

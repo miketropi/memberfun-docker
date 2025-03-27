@@ -219,9 +219,14 @@ function memberfun_semina_add_rating($request) {
     $user_email = $user_info->user_email;
 
     $sum_rating = array_sum($rating_data);
+    $double_points = get_post_meta($seminar_post_id, '_memberfun_semina_double_points', true);
     
+    if ($double_points == "1") {
+        $sum_rating = $sum_rating * 2;
+    }
+
     // $note = $user_name . ' (' . $user_email . ') had rating for your seminar #' . $seminar_post_id . ' - ' . $post_title . ' - ' . $sum_rating . ' points';
-    $note = "{ $user_name } ($user_email) had rating for your seminar: $post_title (#$seminar_post_id) - total: $sum_rating points";
+    $note = "$user_name ($user_email) had rating for your seminar: $post_title (#$seminar_post_id) - total: $sum_rating points" . ($double_points ? ' (Double Points)' : '');
 
 
     $transaction_id = memberfun_add_points($host_user_id, $sum_rating, $note, memberfun_get_first_admin_id());
@@ -628,6 +633,7 @@ function memberfun_semina_prepare_seminar_for_response($seminar_id) {
     }
     
     // Get seminar meta
+    $double_points = get_post_meta($seminar_id, '_memberfun_semina_double_points', true);
     $date = get_post_meta($seminar_id, '_memberfun_semina_date', true);
     $time = get_post_meta($seminar_id, '_memberfun_semina_time', true);
     $host_id = get_post_meta($seminar_id, '_memberfun_semina_host', true);
@@ -696,6 +702,7 @@ function memberfun_semina_prepare_seminar_for_response($seminar_id) {
         'featured_image' => get_the_post_thumbnail_url($seminar_id, 'large'),
         'rating_count' => $rating_count,
         'ratings' => $ratings,
+        'double_points' => ($double_points == "1" ? true : false),
     );
     
     return $response;

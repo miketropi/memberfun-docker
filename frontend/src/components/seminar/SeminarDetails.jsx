@@ -10,13 +10,15 @@ import {
   XCircle,
   FileText,
   Download,
-  Undo2
+  Undo2,
+  Star
 } from 'lucide-react';
 import SeminarRegistrationButton from './SeminarRegistrationButton';
 import SeminarComments from './SeminarComments';
 import SeminarAddRating from './components/SeminarAddRating';
 import SeminarRatingTable from './components/SeminarRatingTable';
 import { seminarsAPI } from '../../api/apiService';
+import Comment from '../common/Comment';
 
 export default function SeminarDetails({ 
   seminar, 
@@ -59,6 +61,15 @@ export default function SeminarDetails({
               <span className="font-medium">Back</span>
             </button>
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">{seminar.title}</h2>
+            <div className='flex items-center gap-2'>
+              {seminar.double_points && (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-gradient-to-r from-yellow-300 to-amber-500 text-yellow-900 dark:from-yellow-600 dark:to-amber-700 dark:text-yellow-100 shadow-sm border border-yellow-400 dark:border-yellow-700">
+                  <Star className="h-3.5 w-3.5 mr-1" /> 
+                  Double points 
+                  <Star className="h-3.5 w-3.5 ml-1" />
+                </span>
+              )}
+            </div>
           </div>
         </div>
         
@@ -141,7 +152,8 @@ export default function SeminarDetails({
         </div>
       </div>
 
-      <SeminarComments seminarId={seminar.id} isHost={isHost} />
+      {/* <SeminarComments seminarId={seminar.id} isHost={isHost} /> */}
+      <Comment postId={seminar.id} />
     </div>
   );
 }

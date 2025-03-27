@@ -27,6 +27,7 @@ function memberfun_semina_modify_columns($columns) {
     }
     
     // Add our custom columns
+    $new_columns['seminar_double_points'] = __('Double Points', 'memberfun-backend');
     $new_columns['seminar_date'] = __('Date & Time', 'memberfun-backend');
     $new_columns['seminar_host'] = __('Host', 'memberfun-backend');
     $new_columns['seminar_location'] = __('Location', 'memberfun-backend');
@@ -54,6 +55,10 @@ function memberfun_semina_modify_columns($columns) {
  */
 function memberfun_semina_custom_column_content($column, $post_id) {
     switch ($column) {
+        case 'seminar_double_points':
+            $double_points = get_post_meta($post_id, '_memberfun_semina_double_points', true);
+            echo !empty($double_points) ? 'Yes' : 'No';
+            break;
         case 'seminar_date':
             $date = get_post_meta($post_id, '_memberfun_semina_date', true);
             $time = get_post_meta($post_id, '_memberfun_semina_time', true);

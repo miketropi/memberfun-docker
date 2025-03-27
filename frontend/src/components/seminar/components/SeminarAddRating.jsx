@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Star, Mic2, ClipboardCheck, Lightbulb, AlertTriangle } from 'lucide-react';
+import { Star, Mic2, ClipboardCheck, Lightbulb, Loader2 } from 'lucide-react';
 import Popover from '../../Popover';
 import { seminarsAPI } from '../../../api/apiService';
 import Toast from '../../Toast';
@@ -7,6 +7,7 @@ import Toast from '../../Toast';
 export default function SeminarAddRating({ seminar, onRatingAdded }) {
   const toastRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [rating, setRating] = useState({
     skill: 5,
     quality: 5,
@@ -100,6 +101,7 @@ export default function SeminarAddRating({ seminar, onRatingAdded }) {
 
   const handleSubmit = async () => {
     setIsOpen(false);
+    setIsLoading(true);
     try {
       const response = await seminarsAPI.addRating(seminar.id, { ratingData: rating });
       const { success, message } = response;
@@ -118,6 +120,8 @@ export default function SeminarAddRating({ seminar, onRatingAdded }) {
           position: 'top-right'
         });
       }
+
+      setIsLoading(false);
     } catch (error) {
       toastRef.current.show('Error adding rating', {
         type: 'error',
@@ -125,6 +129,7 @@ export default function SeminarAddRating({ seminar, onRatingAdded }) {
         position: 'top-right'
       });
       console.error('Error adding rating:', error);
+      setIsLoading(false);
     }
   }
 
@@ -172,12 +177,17 @@ export default function SeminarAddRating({ seminar, onRatingAdded }) {
     </div>
   )
 
-  return <div>
-    
+  return <div> 
     <Popover width={450} placement="right" content={ ratingContent } isOpen={isOpen} onOpenChange={setIsOpen}>
       <button className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 border border-transparent rounded-md shadow-sm hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all animate-gradient bg-[length:200%_200%] bg-left hover:bg-right duration-500">
-        <Star className="h-5 w-5 mr-2" />
-        Add Rating
+        {isLoading ? (
+          <><Loader2 className="h-5 w-5 animate-spin" /> <span className="ml-2">Submitting...</span></>
+        ) : (
+          <>
+            <Star className="h-5 w-5 mr-2" />
+            Add Rating
+          </>
+        )}
       </button>
     </Popover>
 

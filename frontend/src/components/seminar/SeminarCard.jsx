@@ -1,5 +1,5 @@
 import { format, parseISO } from 'date-fns';
-import { Calendar, MapPin, User, CheckCircle } from 'lucide-react';
+import { Calendar, MapPin, User, Star } from 'lucide-react';
 
 export default function SeminarCard({ seminar, isRegistered, onClick, isPast = false }) {
   return (
@@ -19,7 +19,14 @@ export default function SeminarCard({ seminar, isRegistered, onClick, isPast = f
             <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 mr-3" />
           )}
           <div className="text-sm font-medium text-gray-900 dark:text-white">
-            {seminar.title}
+            <div className='font-bold'>{seminar.title}</div>
+            {seminar.double_points && (
+              <span className="inline-flex mt-1 items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-gradient-to-r from-yellow-300 to-amber-500 text-yellow-900 dark:from-yellow-600 dark:to-amber-700 dark:text-yellow-100 shadow-sm border border-yellow-400 dark:border-yellow-700">
+                <Star className="h-3.5 w-3.5 mr-1" />
+                Double Points
+                <Star className="h-3.5 w-3.5 ml-1" />
+              </span>
+            )}
           </div>
         </div>
       </td>

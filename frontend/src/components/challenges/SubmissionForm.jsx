@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { submissionsAPI } from '../../api/apiService';
 import ErrorMessage from '../common/ErrorMessage';
 
-const SubmissionForm = ({ challengeId, onSuccess }) => {
+const SubmissionForm = ({ challengeId, submissionId, onSuccess }) => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -12,6 +12,24 @@ const SubmissionForm = ({ challengeId, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+
+  const fetchSubmission = async () => {
+    const submission = await submissionsAPI.getSubmission(submissionId);
+    // console.log(submission);
+
+    setFormData({
+      title: submission.__title.raw,
+      content: submission.__content.raw,
+      demo_url: submission.demo_url,
+      demo_video: submission.demo_video
+    });
+  }
+
+  useEffect(() => {
+    if (submissionId) {
+      fetchSubmission();
+    }
+  }, [submissionId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,7 +90,13 @@ const SubmissionForm = ({ challengeId, onSuccess }) => {
         }
       };
 
-      const response = await submissionsAPI.createSubmission(submissionData);
+      let response;
+      if (submissionId) {
+        response = await submissionsAPI.updateSubmission(submissionId, submissionData);
+      } else {
+        response = await submissionsAPI.createSubmission(submissionData);
+      }
+
       if (response.status === 'success') {
         setSuccess(true);
         onSuccess?.();
@@ -88,15 +112,22 @@ const SubmissionForm = ({ challengeId, onSuccess }) => {
 
   if (success) {
     return (
-      <div className="submission-success">
-        <h3>Submission Successful!</h3>
-        <p>Your solution has been submitted successfully.</p>
-        <button 
-          onClick={() => setSuccess(false)}
-          className="submit-another"
-        >
-          Submit Another Solution
-        </button>
+      <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-6 text-center shadow-sm border border-green-100 dark:border-green-800">
+        <div className="flex flex-col items-center justify-center space-y-4">
+          <div className="bg-green-100 dark:bg-green-800 rounded-full p-3">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600 dark:text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Submission Successful!</h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-2">Your solution has been submitted successfully, please wait for the review.</p>
+          <button 
+            onClick={() => setSuccess(false)}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Submit Another Solution
+          </button>
+        </div>
       </div>
     );
   }
@@ -182,7 +213,12 @@ const SubmissionForm = ({ challengeId, onSuccess }) => {
         disabled={isSubmitting}
         className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isSubmitting ? 'Submitting...' : 'Submit Solution'}
+        {isSubmitting 
+          ? 'Submitting...' 
+          : submissionId 
+            ? 'Update Solution' 
+            : 'Submit Solution'
+        }
       </button>
     </form>
   );
