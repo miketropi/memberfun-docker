@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
   frontend:
@@ -31,20 +29,37 @@ services:
     command: npm run dev -- --host 0.0.0.0
 
   wordpress:
-    image: wordpress:latest
+    # image: wordpress:latest
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: wordpress
     ports:
-      - "8000:80"
+      - "8181:80"
     environment:
-      - SERVER_NAME=memberfun-api.beplus-agent.com
+      - APACHE_SERVER_NAME=`memberfun-api.${DOMAIN}`
       - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
       - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
       - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
       - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
       - WORDPRESS_TABLE_PREFIX=${WORDPRESS_TABLE_PREFIX}
+      # - WORDPRESS_CONFIG_EXTRA="define('FORCE_SSL_ADMIN', true);"
+      - WORDPRESS_DEBUG=1
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.wordpress-http.rule=Host(`memberfun-api.${DOMAIN}`)
+      - traefik.http.routers.wordpress-http.entrypoints=http
+      - traefik.http.routers.wordpress-http.middlewares=https-redirect
+      - traefik.http.routers.wordpress-https.rule=Host(`memberfun-api.${DOMAIN}`)
+      - traefik.http.routers.wordpress-https.entrypoints=https
+      - traefik.http.routers.wordpress-https.tls=true
+      - traefik.http.routers.wordpress-https.tls.certresolver=le
+      - traefik.http.routers.wordpress-https.service=wordpress-service
+      - traefik.http.services.wordpress-service.loadbalancer.server.port=80
     volumes:
       - wordpress:/var/www/html
       - ./backend/wp-content:/var/www/html/wp-content
+      - ./backend/apache-servername.conf:/etc/apache2/conf-available/servername.conf
     depends_on:
       - mysql
       - redis
@@ -69,6 +84,9 @@ services:
   adminer:
     image: adminer
     container_name: adminer
+    restart: always
+    ports:
+      - 8081:8080
     labels:
       - traefik.enable=true
       - traefik.http.routers.adminer.rule=Host(`memberfun-adminer.${DOMAIN}`)
