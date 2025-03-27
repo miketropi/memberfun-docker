@@ -45,6 +45,14 @@ services:
       - WORDPRESS_TABLE_PREFIX=${WORDPRESS_TABLE_PREFIX}
       # - WORDPRESS_CONFIG_EXTRA="define('FORCE_SSL_ADMIN', true);"
       - WORDPRESS_DEBUG=1
+      - WORDPRESS_CONFIG_EXTRA=
+        define('WP_MEMORY_LIMIT', '256M');
+        define('WP_MAX_MEMORY_LIMIT', '512M');
+        define('UPLOAD_MAX_FILESIZE', '256M');
+        define('POST_MAX_SIZE', '256M');
+        define('JWT_AUTH_SECRET_KEY', '${JWT_AUTH_SECRET_KEY:-dev}');
+        define('JWT_AUTH_CORS_ENABLE', '${JWT_AUTH_CORS_ENABLE:-true}');
+        define('WP_ENVIRONMENT_TYPE', '${WP_ENVIRONMENT_TYPE:-local}');
     labels:
       - traefik.enable=true
       - traefik.http.routers.wordpress-http.rule=Host(`memberfun-api.${DOMAIN}`)
