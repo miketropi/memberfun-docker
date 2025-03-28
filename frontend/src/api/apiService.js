@@ -416,6 +416,16 @@ const pointsAPI = {
     } catch (error) {
       throw error;
     }
+  },
+
+  // Get leaderboard
+  getLeaderboard: async (params = {}) => {
+    try {
+      const response = await api.get('/memberfun/v1/points/leaderboard', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 };
 

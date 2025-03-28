@@ -11,6 +11,8 @@ import SettingsTab from '../components/dashboard/SettingsTab';
 import LoadingSpinner from '../components/dashboard/LoadingSpinner';
 import SeminarsTab from '../components/dashboard/SeminarsTab';
 import ChallengesTab from '../components/challenges/ChallengesTab';
+import LeaderboardTab from '../components/dashboard/LeaderboardTab';
+
 const Dashboard = () => {
   const { isAuthenticated } = useAuthStore();
   const { userData, isLoading: userLoading, fetchUserData } = useUserStore();
@@ -96,6 +98,8 @@ const Dashboard = () => {
             markAllAsRead={markAllAsRead} 
           />
         );
+      case 'leaderboard':
+        return <LeaderboardTab />;
       case 'settings':
         return <SettingsTab userData={userData} />;
       default:

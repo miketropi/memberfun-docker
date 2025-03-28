@@ -81,7 +81,7 @@ const UserRank = ({ rank }) => {
 
         <div className="bg-gray-50 rounded-xl p-6">
           <h4 className="font-semibold text-gray-800 mb-3">Rank Description</h4>
-          <p className="text-gray-600 leading-relaxed">
+          <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
             {rank === 1 && "Diamond rank represents mastery and excellence. Reserved for members who consistently demonstrate exceptional contributions and leadership."}
             {rank === 2 && "Master rank signifies high expertise and dedication. These members are key contributors who help shape our community."}
             {rank === 3 && "Expert rank shows proficiency and commitment. These members actively participate and provide valuable contributions."}

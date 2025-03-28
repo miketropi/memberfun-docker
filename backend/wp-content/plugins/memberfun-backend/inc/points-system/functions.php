@@ -222,8 +222,12 @@ function memberfun_get_user_transactions($user_id, $args = array()) {
         $query .= $wpdb->prepare(" AND type = %s", $args['type']);
     }
     
-    // Add order and limit
-    $query .= " ORDER BY $orderby LIMIT $number OFFSET $offset";
+    // Add order and limit]
+    if ($number == 0) {
+        // $query .= " ORDER BY $orderby OFFSET $offset";
+    } else {
+        $query .= " ORDER BY $orderby LIMIT $number OFFSET $offset";
+    }
     
     // Get the results
     $transactions = $wpdb->get_results($query);
@@ -370,4 +374,61 @@ function memberfun_get_user_rank($user_id) {
     }
     
     return 0; // User not found
+}
+
+/**
+ * Get leaderboard data
+ * 
+ * @param int $limit  The number of results to return
+ * @param int $offset The offset of the results
+ * @return array Leaderboard data
+ */
+function memberfun_get_leaderboard($limit = 20, $page = 1) {
+    global $wpdb;
+    
+    $table_name = memberfun_points_get_table_name();
+
+    // get total users
+    $total_users = $wpdb->get_var("SELECT COUNT(DISTINCT user_id) FROM $table_name LEFT JOIN {$wpdb->users} ON {$wpdb->users}.ID = $table_name.user_id");
+
+    // calculate offset
+    $offset = ($page - 1) * $limit;
+    
+    /**
+     * COALESCE(SUM(CASE WHEN type = 'add' THEN points ELSE 0 END), 0) -
+     * COALESCE(SUM(CASE WHEN type = 'deduct' THEN points ELSE 0 END), 0) as total
+     */
+
+    $query = "SELECT user_id, 
+             COALESCE(SUM(CASE WHEN type = 'add' THEN points ELSE 0 END), 0) -
+             COALESCE(SUM(CASE WHEN type = 'deduct' THEN points ELSE 0 END), 0) as total
+             FROM $table_name 
+             LEFT JOIN {$wpdb->users} ON {$wpdb->users}.ID = $table_name.user_id
+             GROUP BY user_id 
+             ORDER BY total DESC LIMIT $limit OFFSET $offset";
+    
+    $results = $wpdb->get_results($query);
+    
+    // add rank to the results
+    foreach ($results as $key => $result) {
+        // user info
+        $user_info = get_user_by('id', $result->user_id);
+        $result->user_info = [
+            'id' => $user_info->ID,
+            'name' => $user_info->display_name,
+            'email' => $user_info->user_email,
+            'avatar' => get_avatar_url($user_info->ID),
+        ];
+        // rank
+        $result->rank = $key + 1;
+    }
+
+    return [
+        'leaderboard' => $results,
+        'pagination' => [
+            'total_users' => (int) $total_users,
+            'total_pages' => ceil($total_users / $limit),
+            'current_page' => (int) $page,
+        ],
+    ];
 }

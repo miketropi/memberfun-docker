@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, FileText, Bell, Settings, Calendar, Gamepad2 } from 'lucide-react';
+import { Home, FileText, Bell, Settings, Calendar, Gamepad2, Trophy } from 'lucide-react';
 
 const DashboardTabs = ({ notifications = [] }) => {
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -11,6 +11,7 @@ const DashboardTabs = ({ notifications = [] }) => {
     { id: 'seminars', label: 'Seminars', icon: 'calendar', path: '/dashboard/seminars' },
     // { id: 'documents', label: 'Documents', icon: 'document', path: '/dashboard/documents' },
     // { id: 'notifications', label: 'Notifications', icon: 'bell', badge: unreadCount, path: '/dashboard/notifications' },
+    { id: 'leaderboard', label: 'Leaderboard', icon: 'trophy', path: '/dashboard/leaderboard' },
     { id: 'settings', label: 'Settings', icon: 'settings', path: '/dashboard/settings' }
   ];
   
@@ -55,6 +56,8 @@ const getIcon = (iconName) => {
       return <Settings className="h-5 w-5" />;
     case 'calendar':
       return <Calendar className="h-5 w-5" />;
+    case 'trophy':
+      return <Trophy className="h-5 w-5" />;
     default:
       return null;
   }

@@ -139,6 +139,30 @@ function memberfun_points_register_api_routes() {
             ),
         ),
     ));
+
+    // rest api get all users with points and rank
+    register_rest_route($namespace, '/points/leaderboard', array(
+        'methods'             => WP_REST_Server::READABLE,
+        'callback'            => 'memberfun_points_api_get_leaderboard',
+        'permission_callback' => 'memberfun_points_api_permissions_check',
+        'args'                => array(
+            'page' => array(
+                'default'           => 1,
+                'sanitize_callback' => 'absint',
+            ),
+            'per_page' => array(
+                'default'           => 20,
+                'sanitize_callback' => 'absint',
+            ),
+        ),
+    ));
+}
+
+function memberfun_points_api_get_leaderboard($request) {
+    $page = $request->get_param('page');
+    $per_page = $request->get_param('per_page');
+    $leaderboard = memberfun_get_leaderboard($per_page, $page);
+    return new WP_REST_Response($leaderboard, 200);
 }
 
 // memberfun_points_api_get_user_points_and_rank
@@ -277,6 +301,7 @@ function memberfun_points_api_get_user_transactions($request) {
     $response->header('X-WP-Total', $total_transactions);
     $response->header('X-WP-TotalPages', $total_pages);
     
+    // $response->header('X-WP-Demo', json_encode(memberfun_get_user_transactions($user_id, $args)));
     return $response;
 }
 
