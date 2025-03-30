@@ -7,3 +7,6 @@ backend/wp-content/upgrade/
 backend/wp-content/upgrade-temp-backup/ 
 backend/wp-content/themes/*
 !backend/wp-content/themes/twentytwentyfive
+backend/wp-content/object-cache.php
+backend/wp-content/advanced-cache.php
+backend/wp-content/redis-cache/
