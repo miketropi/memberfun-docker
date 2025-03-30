@@ -55,7 +55,7 @@ services:
         define('WP_ENVIRONMENT_TYPE', '${WP_ENVIRONMENT_TYPE:-local}');
         define('WP_REDIS_HOST', 'redis');
         define('WP_REDIS_PORT', 6379);
-        define('WP_REDIS_PASSWORD', '${REDIS_PASSWORD:-redis_password}');
+        define('WP_REDIS_PASSWORD', '${REDIS_PASSWORD}');
     labels:
       - traefik.enable=true
       - traefik.http.routers.wordpress-http.rule=Host(`memberfun-api.${DOMAIN}`)
@@ -116,7 +116,7 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
-    command: redis-server --requirepass ${REDIS_PASSWORD}
+    command: redis-server --bind 0.0.0.0 --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis:/data
     networks:
