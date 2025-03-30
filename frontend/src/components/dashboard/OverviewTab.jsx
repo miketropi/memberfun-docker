@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import React from 'react';
-import { pointsAPI } from '../../api/apiService';
+import { pointsAPI, generalAPI } from '../../api/apiService';
 import UserRank from '../UserRank';
-import { Beer, Calendar, FileText } from 'lucide-react';
+import { Beer, Calendar, FileText, MessageCircle } from 'lucide-react';
 import StatBlock from '../common/StatBlock';
 import StatBlockPointsAnalysis from '../common/StatBlockPointsAnalysis';
+import ClaimPointsDaily from '../common/ClaimPointsDaily';
 
 const OverviewTab = ({ userData }) => {
   const [activityStats, setActivityStats] = useState([
@@ -12,28 +13,25 @@ const OverviewTab = ({ userData }) => {
     { label: 'Ranking', value: 'N/A' },
   ]);
 
-  useEffect(() => {
-    const fetchActivityStats = async () => {
-      try {
-        const response = await pointsAPI.getUserPointsAndRank(userData.id);
-        // console.log(response);
-        setActivityStats([
-          { label: 'Member Points', value: response.points },
-          { label: 'Ranking', value: <UserRank rank={ response.rank } /> },
-        ]);
-      } catch (error) {
-        console.error('Error fetching activity stats:', error);
-      }
-    };
+  const [dashboardOverview, setDashboardOverview] = useState({});
 
-    
+  const fetchDashboardOverview = async () => {
+    const response = await generalAPI.getDashboardOverview(userData.id);
+    setActivityStats([
+      { label: 'Member Points', value: response.total_points },
+      { label: 'Ranking', value: <UserRank rank={ response.rank } /> },
+    ]);
+    setDashboardOverview(response);
+  };
+
+  // fetch dashboard overview
+  useEffect(() => {
+
     // validate userData?.id
     if(userData?.id) {
-      fetchActivityStats();
+      fetchDashboardOverview();
     }
   }, [userData?.id]);
-  
-  
  
   const membershipDetails = [
     { label: 'Role', value: userData?.membershipType || 'Standard' },
@@ -53,16 +51,76 @@ const OverviewTab = ({ userData }) => {
     { id: 1, title: 'Welcome to MemberFun!', time: 'N/A', icon: 'Beer' }
   ];
 
-  const pointsData = {
-    labels: ['2024-01', '2024-02', '2024-03', '2024-04'],
-    datasets: [{
-      label: 'Points',
-      data: [100, 150, 200, 180],
-      fill: false,
-      borderColor: 'rgb(75, 192, 192)',
-      tension: 0.1
-    }]
+  // Function to convert transaction data and group points by date
+  const convertTransactionsToChartData = (transactions) => {
+    if (!transactions || !Array.isArray(transactions) || transactions.length === 0) {
+      return {
+        labels: [],
+        datasets: [{
+          label: 'Points',
+          data: [],
+          fill: false,
+          tension: 0.1,
+          backgroundColor: 'rgba(75, 192, 192, 0.5)',
+          borderColor: 'rgb(75, 192, 192)',
+          borderWidth: 1,
+        }]
+      };
+    }
+
+    // Group transactions by date
+    const pointsByDate = {};
+    
+    transactions.forEach(transaction => {
+      // Extract date part only (YYYY-MM-DD)
+      const date = transaction.created_at.split(' ')[0];
+      const points = parseInt(transaction.points, 10);
+      
+      // Initialize date if not exists
+      if (!pointsByDate[date]) {
+        pointsByDate[date] = 0;
+      }
+      
+      // Add or subtract points based on transaction type
+      if (transaction.type === 'add') {
+        pointsByDate[date] += points;
+      } else if (transaction.type === 'subtract') {
+        pointsByDate[date] -= points;
+      }
+    });
+
+    // Convert to arrays for chart
+    const sortedDates = Object.keys(pointsByDate).sort();
+    const pointsArray = sortedDates.map(date => pointsByDate[date]);
+
+    return {
+      labels: sortedDates,
+      datasets: [{
+        label: 'Points',
+        data: pointsArray,
+        fill: false,
+        tension: 0.1,
+        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        borderColor: 'rgb(75, 192, 192)',
+        borderWidth: 1,
+      }]
+    };
   };
+
+  // const pointsData = {
+  //   labels: ['2024-01', '2024-02', '2024-03', '2024-04'],
+  //   datasets: [{
+  //     label: 'Points',
+  //     data: [100, 150, 200, 180],
+  //     fill: false,
+  //     // borderColor: 'rgb(75, 192, 192)',
+  //     tension: 0.1,
+
+  //     backgroundColor: 'rgba(75, 192, 192, 0.5)',
+  //     borderColor: 'rgb(75, 192, 192)',
+  //     borderWidth: 1,
+  //   }]
+  // };
   
   return (
     <div>
@@ -73,7 +131,7 @@ const OverviewTab = ({ userData }) => {
         <StatCard title="Points & Ranking" items={activityStats} />
         
         <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-medium text-gray-800 mb-4">Quick Actions</h3>
+          <h3 className="text-lg font-bold text-gray-800 mb-4">Quick Actions</h3>
           <div className="space-y-3">
             <button disabled={true} className="disabled:opacity-50 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition">
               Update Profile
@@ -89,13 +147,25 @@ const OverviewTab = ({ userData }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {/* Count your seminars */}
-        <StatBlock icon={Calendar} duration={1000} title="Seminars" number={10} description="Total number of seminars attended" />
-        {/* Count your submissions */}
-        <StatBlock icon={FileText} duration={1000} title="Submissions" number={10} description="Total number of submissions made" />
-        
         {/* {  } */}
-        <StatBlockPointsAnalysis data={ pointsData } />
+        {/* Points Analysis */}
+        <StatBlockPointsAnalysis data={ convertTransactionsToChartData(dashboardOverview?.transactions) } />
+
+        {/* Count your seminars */}
+        <StatBlock icon={Calendar} duration={1000} title="Total Seminars" number={dashboardOverview?.total_seminars} description="Total number of seminars you are hosting, contact with admin to register for seminars and get more information" />
+        {/* Count your submissions */}
+        <StatBlock icon={FileText} duration={1000} title="Total Submissions" number={dashboardOverview?.total_submissions} description="Total number of submissions made by you, join challenge and submit your work to get more points." />
+        {/* Count your comments */}
+        {/* <StatBlock icon={MessageCircle} duration={1000} title="Comments from your" number={10} description="Total number of comments made, actively participate and grow the community with your contributions." /> */}
+      </div>
+
+      {/** Claim Points Daily */}
+      <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-8">
+        <h3 className="text-lg font-bold text-gray-800 mb-4">Claim Points Daily</h3>
+        <ClaimPointsDaily lastClaimDate={dashboardOverview?.last_claim_date} serverCurrentDate={dashboardOverview?.server_current_date} updatedUserPoints={ (points) => {
+          // console.log(points);
+          fetchDashboardOverview()
+        } } />
       </div>
       
       <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
@@ -112,7 +182,7 @@ const OverviewTab = ({ userData }) => {
 
 const StatCard = ({ title, items }) => (
   <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-    <h3 className="text-lg font-medium text-gray-800 mb-4">{title}</h3>
+    <h3 className="text-lg font-bold text-gray-800 mb-4">{title}</h3>
     <div className="space-y-3">
       {items.map((item, index) => (
         <div key={index} className="flex justify-between items-center">

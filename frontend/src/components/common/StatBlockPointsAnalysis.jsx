@@ -3,20 +3,18 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 
 // Register ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
@@ -30,9 +28,9 @@ const StatBlockPointsAnalysis = ({ data }) => {
       {
         label: 'Points',
         data: [65, 59, 80, 81, 56, 55],
-        fill: false,
+        backgroundColor: 'rgba(75, 192, 192, 0.5)',
         borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1,
+        borderWidth: 1,
       },
     ],
   };
@@ -50,26 +48,28 @@ const StatBlockPointsAnalysis = ({ data }) => {
         text: 'Points Analysis Over Time',
       },
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Points',
-        },
-      },
-      x: {
-        title: {
-          display: true,
-          text: 'Date',
-        },
-      },
-    },
+    // scales: {
+    //   y: {
+    //     beginAtZero: true,
+    //     title: {
+    //       display: true,
+    //       text: 'Points',
+    //     },
+    //   },
+    //   x: {
+    //     title: {
+    //       display: true,
+    //       text: 'Date',
+    //     },
+    //   },
+    // },
+    backgroundColor: 'rgba(75, 192, 75, 0.5)',
+    borderColor: 'rgb(75, 192, 75)',
   };
 
   return (
-    <div className="w-full h-[400px] p-4 bg-white rounded-lg shadow">
-      <Line options={options} data={chartData} />
+    <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100">
+      <Bar options={options} data={chartData} />
     </div>
   );
 };

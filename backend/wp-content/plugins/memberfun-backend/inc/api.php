@@ -59,8 +59,85 @@ add_action('rest_api_init', function () {
             )
         )
     ));
+
+    // dashboard overview api general user data 
+    register_rest_route('memberfun/v1', '/dashboard/overview/(?P<id>\d+)', array(
+        'methods' => 'GET',
+        'callback' => 'memberfun_dashboard_overview',
+        'permission_callback' => function($request) {
+            return current_user_can('edit_user', $request['id']);
+        },
+        'args' => array(
+            'id' => array(
+                'validate_callback' => function($value) {
+                    return is_numeric($value);
+                }
+            )
+        )
+    ));
 });
 
+// memberfun_dashboard_overview
+function memberfun_dashboard_overview($request) {
+    $params = $request->get_params();
+    $user_id = $params['id'];
+
+    // get count total seminars of user
+    $total_seminars = get_posts(array(
+        'post_type' => 'memberfun_semina',
+        'author' => $user_id,
+        'posts_per_page' => -1,
+        'meta_query' => array(
+            array(
+                'key' => '_memberfun_semina_host',
+                'value' => $user_id,
+                'compare' => '='
+            )
+        )
+    ));
+
+    // get count total submissions of user  
+    $total_submissions = get_posts(array(
+        'post_type' => 'submission',
+        'author' => $user_id,
+        'posts_per_page' => -1
+    ));
+
+    // get count total comments of user
+    $total_comments = get_comments(array(
+        'user_id' => $user_id,
+        'posts_per_page' => -1
+    ));
+
+    // get transaction points of user
+    $transactions = memberfun_get_user_transactions($user_id, [
+        'number' => 0,
+    ]);
+
+    // total points of user
+    $total_points = memberfun_get_user_points($user_id);
+
+    // get rank of user
+    $rank = memberfun_get_user_rank($user_id);
+
+    // get last claim date of user
+    $last_claim_date = get_user_meta($user_id, 'memberfun_last_claim_date', true);
+
+    // server current date
+    $server_current_date = date('Y-m-d H:i:s');
+
+    // return response
+    return new WP_REST_Response(array(
+        'total_seminars' => count($total_seminars),
+        'total_submissions' => count($total_submissions),
+        'total_comments' => count($total_comments),
+        'transactions' => $transactions,
+        'total_points' => $total_points,
+        'rank' => $rank,
+        'last_claim_date' => $last_claim_date,
+        'server_current_date' => $server_current_date
+    ), 200);
+}
 // memberfun_update_password
 function memberfun_update_password($request) {
     $params = $request->get_params();

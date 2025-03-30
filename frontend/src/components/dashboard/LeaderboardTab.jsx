@@ -3,6 +3,8 @@ import { pointsAPI } from '../../api/apiService';
 import UserRank from '../UserRank';
 import Modal from '../Modal';
 import UserHistoryActivityPoints from '../common/UserHistoryActivityPoints';
+import Pagination from '../common/Pagination';
+
 /**
  * Leaderboard Tab
  * @returns {JSX.Element}
@@ -133,7 +135,16 @@ export default function LeaderboardTab() {
               </div>
 
               {/* Pagination */}
-              <div className="flex justify-center mt-6">
+              {totalPages > 1 && (
+                <div className="mt-8">
+                  <Pagination
+                    totalPages={totalPages}
+                    currentPage={page}
+                    onPageChange={setPage}
+                  />
+                </div>
+              )}
+              {/* <div className="flex justify-center mt-6">
                   <nav className="flex items-center space-x-2">
                       <button
                           onClick={() => setPage(Math.max(1, page - 1))}
@@ -153,7 +164,8 @@ export default function LeaderboardTab() {
                           Next
                       </button>
                   </nav>
-              </div>
+              </div> */}
+
           </div>
           <Modal 
             isOpen={isModalOpen} 
