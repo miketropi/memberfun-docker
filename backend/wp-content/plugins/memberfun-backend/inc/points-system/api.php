@@ -156,7 +156,30 @@ function memberfun_points_register_api_routes() {
             ),
         ),
     ));
+
+    // Claim points daily
+    register_rest_route($namespace, '/points/claim-daily', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'memberfun_points_api_claim_daily',
+        'permission_callback' => 'memberfun_points_api_permissions_check',
+        'args'                => array(
+            'user_id' => array(
+                'required'          => true,
+                'validate_callback' => function($param) {
+                    return is_numeric($param) && get_user_by('id', $param);
+                }
+            ),
+        ),
+    ));
 }
+
+// memberfun_points_api_claim_daily
+function memberfun_points_api_claim_daily($request) {
+    $user_id = $request->get_param('user_id');
+    $result = memberfun_claim_daily_points($user_id);
+    return new WP_REST_Response($result, 200);
+}
+
 
 function memberfun_points_api_get_leaderboard($request) {
     $page = $request->get_param('page');

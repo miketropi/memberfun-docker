@@ -5,6 +5,7 @@ import SeminarFilters from './components/SeminarFilters';
 import SeminarPagination from './components/SeminarPagination';
 import SeminarHeader from './components/SeminarHeader';
 import SeminarContent from './components/SeminarContent';
+import Pagination from '../common/Pagination';
 
 export default function CustomSeminarExample() {
   const [seminars, setSeminars] = useState([]);
@@ -46,7 +47,7 @@ export default function CustomSeminarExample() {
     total: 0,
     pages: 0,
     page: 1,
-    limit: 20
+    limit: 12
   });
 
   // Filter state
@@ -230,10 +231,20 @@ export default function CustomSeminarExample() {
                   }}
                 />
 
-                <SeminarPagination
+                {/* <SeminarPagination
                   pagination={pagination}
                   onPageChange={handlePageChange}
-                />
+                /> */}
+                { /* validate pagination.pages > 1 */ }
+                { pagination.pages > 1 && (
+                  <div className="mt-8">
+                    <Pagination
+                      totalPages={pagination.pages}
+                      currentPage={pagination.page}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                )}
               </>
             )
           }

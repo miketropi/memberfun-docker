@@ -426,6 +426,16 @@ const pointsAPI = {
     } catch (error) {
       throw error;
     }
+  },
+
+  // Claim daily points
+  claimDailyPoints: async (userId) => {
+    try {
+      const response = await api.post('/memberfun/v1/points/claim-daily', { user_id: userId });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 };
 
@@ -595,5 +605,15 @@ const submissionsAPI = {
   }
 };
 
+const generalAPI = {
+  getDashboardOverview: async (userId) => {
+    try {
+      const response = await api.get(`/memberfun/v1/dashboard/overview/${userId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+};
 // Export all APIs
-export { api, authAPI, usersAPI, postsAPI, seminarsAPI, commentsAPI, pointsAPI, challengesAPI, submissionsAPI }; 
+export { api, generalAPI, authAPI, usersAPI, postsAPI, seminarsAPI, commentsAPI, pointsAPI, challengesAPI, submissionsAPI }; 

@@ -432,3 +432,38 @@ function memberfun_get_leaderboard($limit = 20, $page = 1) {
         ],
     ];
 }
+
+// memberfun_claim_daily_points
+function memberfun_claim_daily_points($user_id) {
+    global $wpdb;
+
+    // check if user has claimed today
+    $last_claim_date = get_user_meta($user_id, 'memberfun_last_claim_date', true);
+    $today = current_time('mysql');
+
+    // convert string to date
+    $last_claim_date = date('Y-m-d', strtotime($last_claim_date));
+    $today = date('Y-m-d', strtotime($today));
+
+    if ($last_claim_date == $today) {
+        return new WP_Error('already_claimed', __('You have already claimed your daily points', 'memberfun-backend'));
+    }
+
+    // add points
+    $points = rand(1, 10);
+    memberfun_add_points($user_id, $points, "Daily points claim: $points points earned on " . date('Y-m-d', strtotime($today)), memberfun_get_first_admin_id());
+
+    // update last claim date
+    update_user_meta($user_id, 'memberfun_last_claim_date', $today);
+
+    // get user points
+    $user_points = memberfun_get_user_points($user_id);
+
+    // return response
+    return [
+        'success' => true,
+        'claim_points' => $points,
+        'last_claim_date' => $today,
+        'user_points' => $user_points,
+    ];
+}
