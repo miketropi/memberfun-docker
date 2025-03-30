@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 import { pointsAPI } from '../../api/apiService';
 import UserRank from '../UserRank';
-import { Beer } from 'lucide-react';
+import { Beer, Calendar, FileText } from 'lucide-react';
+import StatBlock from '../common/StatBlock';
+import StatBlockPointsAnalysis from '../common/StatBlockPointsAnalysis';
 
 const OverviewTab = ({ userData }) => {
   const [activityStats, setActivityStats] = useState([
@@ -24,7 +26,11 @@ const OverviewTab = ({ userData }) => {
       }
     };
 
-    fetchActivityStats();
+    
+    // validate userData?.id
+    if(userData?.id) {
+      fetchActivityStats();
+    }
   }, [userData?.id]);
   
   
@@ -46,6 +52,17 @@ const OverviewTab = ({ userData }) => {
     // { id: 2, title: 'Downloaded Member Benefits Guide', time: '5 days ago', icon: 'document' },
     { id: 1, title: 'Welcome to MemberFun!', time: 'N/A', icon: 'Beer' }
   ];
+
+  const pointsData = {
+    labels: ['2024-01', '2024-02', '2024-03', '2024-04'],
+    datasets: [{
+      label: 'Points',
+      data: [100, 150, 200, 180],
+      fill: false,
+      borderColor: 'rgb(75, 192, 192)',
+      tension: 0.1
+    }]
+  };
   
   return (
     <div>
@@ -69,6 +86,16 @@ const OverviewTab = ({ userData }) => {
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* Count your seminars */}
+        <StatBlock icon={Calendar} duration={1000} title="Seminars" number={10} description="Total number of seminars attended" />
+        {/* Count your submissions */}
+        <StatBlock icon={FileText} duration={1000} title="Submissions" number={10} description="Total number of submissions made" />
+        
+        {/* {  } */}
+        <StatBlockPointsAnalysis data={ pointsData } />
       </div>
       
       <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
