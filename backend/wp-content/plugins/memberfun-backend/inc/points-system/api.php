@@ -62,7 +62,7 @@ function memberfun_points_register_api_routes() {
     register_rest_route($namespace, '/points/user/(?P<user_id>\d+)/transactions', array(
         'methods'             => WP_REST_Server::READABLE,
         'callback'            => 'memberfun_points_api_get_user_transactions',
-        'permission_callback' => 'memberfun_points_api_permissions_check',
+        'permission_callback' => '__return_true',
         'args'                => array(
             'user_id' => array(
                 'validate_callback' => function($param) {
@@ -144,7 +144,7 @@ function memberfun_points_register_api_routes() {
     register_rest_route($namespace, '/points/leaderboard', array(
         'methods'             => WP_REST_Server::READABLE,
         'callback'            => 'memberfun_points_api_get_leaderboard',
-        'permission_callback' => 'memberfun_points_api_permissions_check',
+        'permission_callback' => '__return_true', // 'memberfun_points_api_permissions_check',
         'args'                => array(
             'page' => array(
                 'default'           => 1,
