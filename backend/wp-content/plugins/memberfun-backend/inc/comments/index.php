@@ -56,6 +56,11 @@ function memberfun_register_comments_rest_routes() {
                 'type' => 'string',
                 'default' => 'approve',
             ),
+            'parent' => array(
+                'required' => false,
+                'type' => 'integer',
+                'default' => 0,
+            ),
         ),
     ));
 
@@ -106,8 +111,77 @@ function memberfun_register_comments_rest_routes() {
             return memberfun_can_delete_comment($request['id']);
         },
     ));
+
+    // reply comment
+    register_rest_route('memberfun/v1', '/comments/(?P<id>\d+)/reply', array(
+        'methods' => 'POST',
+        'callback' => 'memberfun_reply_comment',
+        'permission_callback' => function ($request) {
+            return is_user_logged_in();
+        },
+        'args' => array(
+            'id' => array(
+                'required' => true,
+                'type' => 'integer',
+            ),
+            'content' => array(
+                'required' => true,
+                'type' => 'string',
+            ),
+        )
+    ));
 }
 add_action('rest_api_init', 'memberfun_register_comments_rest_routes');
+
+/**
+ * Reply to a comment
+ *
+ * @param WP_REST_Request $request Request object.
+ * @return WP_REST_Response|WP_Error Response object or WP_Error on failure.
+ */
+function memberfun_reply_comment($request) {
+    $user_id = get_current_user_id();
+    $comment_id = $request['id'];
+    $content = $request->get_param('content');
+
+    // Validate comment exists
+    $comment = get_comment($comment_id);
+    if (!$comment) {
+        return new WP_Error('invalid_comment', 'Invalid comment ID', array('status' => 404));
+    }
+
+    // Validate content
+    if (empty($content)) {
+        return new WP_Error('empty_content', 'Comment content cannot be empty', array('status' => 400));
+    }
+
+    // Create reply comment
+    $reply_comment_data = array(
+        'comment_post_ID' => $comment->comment_post_ID,
+        'comment_parent' => $comment_id,
+        'comment_content' => wp_kses_post($content),
+        'user_id' => $user_id,
+        'comment_author' => get_the_author_meta('display_name', $user_id),
+        'comment_author_email' => get_the_author_meta('email', $user_id),
+        'comment_approved' => 1, // Auto-approve for logged-in users
+    );
+
+    $reply_comment_id = wp_insert_comment($reply_comment_data); 
+
+    return new WP_REST_Response(array(
+        'id' => $reply_comment_id,
+        'post_id' => $comment->comment_post_ID,
+        'parent' => $comment_id,
+        'author' => array(
+            'id' => $user_id,
+            'name' => get_the_author_meta('display_name', $user_id),
+            'email' => get_the_author_meta('email', $user_id),
+        ),
+        'content' => $content,
+        'date' => current_time('mysql'),
+        'status' => 1,
+    ), 201);
+}
 
 /**
  * Get comments with enhanced filtering
@@ -126,9 +200,11 @@ function memberfun_get_comments($request) {
         // 'search' => $request->get_param('search'),
         // 'status' => $request->get_param('status'),
         // 'no_found_rows' => false,
+        'parent' => 0, // $request->get_param('parent'),
         'orderby' => 'comment_date',
         'order' => 'DESC',
-        'status' => 'approve'
+        'status' => 'approve',
+        
     );
 
     // return new WP_REST_Response(array(
@@ -138,6 +214,7 @@ function memberfun_get_comments($request) {
     // Remove empty values
     $args = array_filter($args);
     $args['no_found_rows'] = false;
+    $args['parent'] = $args['parent'] ?? 0;
 
     // $comments_query = new WP_Comment_Query();
     // $comments = $comments_query->query($args);
@@ -163,6 +240,18 @@ function memberfun_get_comments($request) {
     $pages = $comments_query->max_num_pages;
 
     $comments_data = array_map(function($comment) {
+
+        // count the comment children
+        $comment_children = get_comments(array(
+            'post_id' => $comment->comment_post_ID,
+            'parent' => $comment->comment_ID,
+            'status' => 'approve',
+            'number' => 0,
+            'orderby' => 'comment_date',
+            'order' => 'ASC',
+        ));
+        $comment_children_count = count($comment_children);
+
         return array(
             'id' => $comment->comment_ID,
             'post_id' => $comment->comment_post_ID,
@@ -175,6 +264,21 @@ function memberfun_get_comments($request) {
             'date' => $comment->comment_date,
             'parent' => $comment->comment_parent,
             'status' => $comment->comment_approved,
+            'children_count' => $comment_children_count,
+            'children' => array_map(function($child) {
+                return array(
+                    'id' => $child->comment_ID,
+                    'parent' => $child->comment_parent,
+                    'content' => $child->comment_content,
+                    'date' => $child->comment_date,
+                    'author' => array(
+                        'id' => $child->user_id,
+                        'name' => $child->comment_author,
+                        'email' => $child->comment_author_email,
+                    ),
+                    'status' => $child->comment_approved,
+                );
+            }, $comment_children),
         );
     }, $comments);
 

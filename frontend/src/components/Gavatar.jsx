@@ -15,7 +15,7 @@ export default function Gavatar({ email, size = 40, className = '' }) {
 
   return (
     <img
-      src={gravatarUrl}
+      src={gravatarUrl || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?s=40&d=mp'}
       alt="User avatar"
       className={`rounded-full ${className}`}
       width={size}

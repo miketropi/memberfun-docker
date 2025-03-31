@@ -330,7 +330,17 @@ const commentsAPI = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+  // Reply to a comment
+  replyComment: async (commentId, content) => {
+    try {
+      const response = await api.post(`/memberfun/v1/comments/${commentId}/reply`, { content });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 // Points System API
