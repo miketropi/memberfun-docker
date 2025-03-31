@@ -424,6 +424,14 @@ function CommentForm({ message = '', onSubmit, onCancel }) {
     setTimeout(() => {
       inputRef.current.focus();
     }, 100);
+
+    // if forcus input and press esc key, call onCancel
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onCancel();
+      }
+    };
+    inputRef.current.addEventListener('keydown', handleKeyDown);
   }, []);
 
   return (
