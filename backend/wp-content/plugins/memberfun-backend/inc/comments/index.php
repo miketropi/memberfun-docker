@@ -346,6 +346,8 @@ function memberfun_create_comment($request) {
         'date' => $comment->comment_date,
         'parent' => $comment->comment_parent,
         'status' => $comment->comment_approved,
+        'children' => array(),
+        'children_count' => 0,
     ), 201);
 }
 
