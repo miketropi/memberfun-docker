@@ -48,14 +48,23 @@ const ClaimPointsDaily = ( { lastClaimDate = null, serverCurrentDate = null, upd
 
     // Check if user has claimed today
     // today is in format YYYY-MM-DD
-    const today = new Date(serverCurrentDate).toISOString().split('T')[0];
+
+    if(!serverCurrentDate) {
+      setCanClaim(false);
+      return;
+    }
+
+    const today = serverCurrentDate.split(' ')[0];
 
     // lastClaimDate is in format 2025-03-30 08:54:56 convert to YYYY-MM-DD
     const lastClaim = lastClaimDate ? lastClaimDate.split(' ')[0] : null;
 
-    // console.log(today, lastClaim);
     if (lastClaim === today) {
+      console.log('can\'t claim');
       setCanClaim(false);
+    } else {
+      console.log('can claim');
+      setCanClaim(true);
     }
   }, [lastClaimDate]);
 
@@ -99,6 +108,7 @@ const ClaimPointsDaily = ( { lastClaimDate = null, serverCurrentDate = null, upd
   };
 
   const getNextClaimTime = () => {
+    // console.log(lastClaimDate, serverCurrentDate);
     if (!lastClaimDate) return null;
     
     const lastClaim = new Date(lastClaimDate);
@@ -106,7 +116,7 @@ const ClaimPointsDaily = ( { lastClaimDate = null, serverCurrentDate = null, upd
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
     
-    // now from serverCurrentDate
+    // now from serverCurrentDate and format to YYYY-MM-DD
     const now = new Date(serverCurrentDate);
     const timeLeft = tomorrow - now;
     
@@ -130,6 +140,7 @@ const ClaimPointsDaily = ( { lastClaimDate = null, serverCurrentDate = null, upd
           refFn._setFinalNumber(5);
         }, 3000);
       } } /> */}
+      {/* { lastClaimDate } - { serverCurrentDate } */}
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
         <div className="p-4 md:p-6 bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col justify-center">
           <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-2">
