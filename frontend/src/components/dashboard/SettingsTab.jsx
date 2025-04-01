@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import PasswordUpdateForm from './PasswordUpdateForm';
 import { usersAPI } from '../../api/apiService';
+import useAuthStore from '../../store/authStore';
+import Toast from '../../components/Toast';
 
 const SettingsTab = ({ userData }) => {
+  const { user, setUser } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const toastRef = useRef(null);
   const [formData, setFormData] = useState({
     ID: userData?.id || '',
     first_name: userData?.first_name || '',
@@ -21,14 +26,29 @@ const SettingsTab = ({ userData }) => {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     let { email, ...rest } = formData;
     const response = await usersAPI.updateUser(userData.id, rest);
     console.log(response);
+    let message = response.message;
+    if (response.status === "success") {
+      setUser({
+        ...user,
+        name: `${rest.first_name} ${rest.last_name}`,
+      });
+      toastRef.current.show(message, { type: 'success' });
+    } else {
+      toastRef.current.show(message, { type: 'error' });
+    }
+
+    setIsLoading(false);
   };
   
   return (
     <div>
+
       {/* { JSON.stringify(userData) } */}
+      <Toast ref={toastRef} />
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">Account Settings</h2>
       <form onSubmit={handleSubmit} className="space-y-8">
         <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -101,9 +121,10 @@ const SettingsTab = ({ userData }) => {
         <div className="flex justify-end">
           <button 
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg transition"
+            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
           >
-            Save Changes
+            {isLoading ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </form>

@@ -175,7 +175,8 @@ function memberfun_update_user($request) {
         );
     }
 
-    // update user
+    // update user = first name + last name
+    $user_data['display_name'] = $user_data['first_name'] . ' ' . $user_data['last_name'];
     $user_data = wp_update_user($user_data);
 
     // is is_error
