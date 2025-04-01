@@ -257,7 +257,7 @@ function memberfun_get_comments($request) {
             'post_id' => $comment->comment_post_ID,
             'author' => array(
                 'id' => $comment->user_id,
-                'name' => $comment->comment_author,
+                'name' => memberfun_get_display_name($comment->user_id), // $comment->comment_author,
                 'email' => $comment->comment_author_email,
             ),
             'content' => $comment->comment_content,
@@ -273,7 +273,7 @@ function memberfun_get_comments($request) {
                     'date' => $child->comment_date,
                     'author' => array(
                         'id' => $child->user_id,
-                        'name' => $child->comment_author,
+                        'name' => memberfun_get_display_name($child->user_id), // $child->comment_author,
                         'email' => $child->comment_author_email,
                     ),
                     'status' => $child->comment_approved,

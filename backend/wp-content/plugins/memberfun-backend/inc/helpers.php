@@ -113,3 +113,9 @@ function memberfun_get_first_admin_id() {
     return $admins[0]->ID;
 }
 
+// get display name
+function memberfun_get_display_name($user_id) {
+    $user = get_user_by('id', $user_id);
+    return $user->display_name;
+}
+
